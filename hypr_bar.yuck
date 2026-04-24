@@ -1,0 +1,91 @@
+;including modules 
+(include "hypr_bar/widgets.yuck")
+
+(defwindow hypr_bar
+  :monitor 0
+  :windowtype "dock"
+  :hexpand "false"
+  :vexpand "false"
+  :geometry (geometry
+    :anchor "top center"
+    :x "0"
+    :y "5"
+    :width "98.8%"
+    :height "4%"
+  )
+  :stacking "fg"
+  :exclusive "true"
+  :focusable "false"
+
+  (centerbox
+    :class "base_div"
+    :orientation "h"
+    :spacing 10
+
+    (box
+      :class "left"
+      :halign "start"
+      :space-evenly false
+      :spacing 10
+      (Arch_logo)
+      (workspace)
+    )
+
+    (box
+      :class "center"
+      :halign "center"
+      ;"pass"
+    )
+
+    (box
+      :class "right"
+      :halign "end"
+      :space-evenly false
+      :spacing 8
+      (system_stats)
+      (updates)
+      (wifi)
+      (battery)
+      (time_date_cal)
+    )
+  )
+)
+
+
+
+(defwindow low_batt_warning
+  :monitor 0
+  :windowtype "dialog"
+  :geometry (geometry
+    :anchor "center"
+    :width "200px"
+    :height "20px"
+  )
+  :stacking "overlay"
+  :focusable "true"
+  (low_batt_warning)
+)
+
+
+
+(defwindow cal_popup
+  :monitor 0
+  :windowtype "normal"
+;  :windowtype "popup"    ; was "normal"
+;  :focusable  "false"
+  :geometry (geometry
+    :anchor "top right"
+    :x "8px"
+    :y "8px"
+    :width "200px"
+  )
+  :stacking "overlay"
+  :focusable "false"
+  (eventbox
+    :onhoverlost "eww close cal_popup"
+    (calendar :class "cal"
+              :day {EWW_TIME.day}
+              :month {EWW_TIME.month}
+              :year {EWW_TIME.year})
+  )
+)

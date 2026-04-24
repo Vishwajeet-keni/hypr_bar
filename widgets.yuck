@@ -1,0 +1,169 @@
+;=====Arch_Linux_Logo============================
+(defvar arch_logo "")
+
+(defwidget Arch_logo []
+  (box  :orientation  "h"
+        :spacing       0
+
+      (label  :text arch_logo :class "arch_linux_logo")
+  )
+)
+
+
+
+;=====Workspace==================================
+(defvar ws-dot "")
+
+(defpoll workspace_data :interval "0.5s"
+  :initial `{"current": 1, "workspaces": [1]}` `~/.config/eww/hypr_bar/scripts/workspaces.sh`)
+
+(defwidget ws-btn [id]
+  (button :class {"${workspace_data.current}" == "${id}" ? "ws-active" : "ws-inactive"}
+          :onclick `hyprctl dispatch workspace ${id}`
+      (label :text {"${workspace_data.current}" == "${id}" ? ws-dot : "${id}"})
+  )
+)
+
+(defwidget workspace []
+  (box :class       "workspace-container"
+       :orientation "h"
+       :spacing      1
+
+      (for ws in {workspace_data.workspaces}
+        (ws-btn :id "${ws}")
+      )
+  )
+)
+
+
+
+;=====System_Stats===============================
+;cpu_usage ,mem_usage ,temp
+
+(defpoll System_data :interval "2s" "~/.config/eww/hypr_bar/scripts/system_stats.sh")
+
+;Resuable function
+(defwidget status_item [class_name spacing x_icon x_name x_state] 
+  (box  :class        class_name
+        :orientation  "h"
+        :space-evenly false
+        :spacing      spacing
+
+      (label  :text "${x_icon}" :class "${x_state}")
+      (label  :text "${x_name}" :class "${x_state}")
+  ) 
+)
+
+(defwidget system_stats [] 
+
+  (box  :class        "system-stats-container"
+        :orientation  "h"
+        :space-evenly false
+        :spacing       8
+
+      (status_item  :class_name "cpu-container"
+                    :spacing     8  
+                    :x_icon     "${System_data.cpu_icon}"
+                    :x_name     "${System_data.cpu_usage}"
+                    :x_state    "${System_data.cpu_state}"
+      )
+
+      (status_item  :class_name "memory-container"
+                    :spacing     8  
+                    :x_icon     "${System_data.memory_icon}"
+                    :x_name     "${System_data.memory_usage}%"
+                    :x_state    "${System_data.memory_state}"
+      )
+
+      (status_item  :class_name "temp-container"
+                    :spacing     5  
+                    :x_icon     "${System_data.temp_icon}"
+                    :x_name     "${System_data.temp_lvl}°C"
+                    :x_state    "${System_data.temp_state}" 
+      ) 
+  )
+)
+
+
+
+;=====PKG_Updates_Avalable=======================
+(defvar icon-updates "")
+
+(defpoll update_data :interval "3600s" "~/.config/eww/hypr_bar/scripts/updates.sh")
+
+(defwidget updates []
+  (tooltip
+
+    (box :orientation "v" :spacing 4
+      (label :text "pacman: ${update_data.pacman_u}")
+      (label :text "yay: ${update_data.yay_u}")
+    )
+
+    (box :class "updates-container"
+         :orientation "h"
+         :spacing 8
+      (label :text icon-updates)
+      (label :text "${update_data.count}")
+    )
+  )
+)
+
+
+
+;=====Wifi=======================================
+(defpoll wifi-data :interval "1s" "~/.config/eww/hypr_bar/scripts/wifi.sh")
+
+(defwidget wifi []
+  (button 
+    :class "wifi_but"
+    :onclick "~/.config/eww/scripts/wifi.sh toggle"
+    :tooltip "${wifi-data.ssid}"
+    "${wifi-data.icon}"
+  )
+)
+
+
+
+;=====Battery====================================
+(defpoll battery-data :interval "5s" "~/.config/eww/hypr_bar/scripts/battery.sh")  
+
+(defwidget battery []
+  (box  :class "battery_container" 
+        :orientation "h" 
+        :tooltip "${battery-data.class}"
+
+    (label  :text "${battery-data.icon}"   :class "${battery-data.class}")
+    (label  :text "${battery-data.level}%" :class "${battery-data.class}")
+  )
+)
+
+;=====Low_Battery_Warning==========================
+(defwidget low_batt_warning []
+  (box :class "low-batt-container"
+       :orientation "v"
+       :spacing 12
+
+    (label  :text "Battery is low!"           :class "low-batt-msg")
+    (label  :text "Please connect to charger" :class "low-batt-sub" )
+
+    (button :class "low-batt-btn"
+            :onclick "eww close low_batt_warning"
+            "OK"
+    )
+  )
+)
+
+
+
+;=====Time_Date_Calender=======================================
+(defpoll time_poll :interval "10s" "date '+%a %d-%b  %H:%M'")
+
+(defwidget time_date_cal []
+  (eventbox
+    :onhover "eww open cal_popup"
+    :onhoverlost "sleep 0.3 && eww close cal_popup 2>/dev/null"
+    (box :class "time_container"
+      (label :class "time" :text time_poll)
+    )
+  )
+)
