@@ -9,9 +9,9 @@
   :geometry (geometry
     :anchor "top center"
     :x "0"
-    :y "5"
+    :y "3"
     :width "98.8%"
-    :height "4%"
+    :height "2%"
   )
   :stacking "fg"
   :exclusive "true"
