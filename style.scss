@@ -1,9 +1,23 @@
-// General CSS
+// ── Single source of truth ──
+$bar-height: 28px;
+
+// Derived sizes — do not edit these directly
+$font-logo:  $bar-height * 0.714;   // 20px  at 28px bar
+$font-base:  $bar-height * 0.518;   // 14.5px at 28px bar
+$font-sm:    $bar-height * 0.429;   // 12px  at 28px bar
+$btn-size:   $bar-height * 0.714;   // 20px  at 28px bar (ws button min size)
+
+// Derived spacing & padding (bar elements only)
+$pad-edge:    $bar-height * 0.286;  // 8px    at 28px — left/right margin
+$pad-logo-h:  $bar-height * 0.071;  // 2px    at 28px — arch logo h-padding
+$pad-ws-btn:  $bar-height * 0.036;  // 1px    at 28px — workspace button padding
+$pad-tip-v:   $bar-height * 0.214;  // 6px    at 28px — tooltip vertical padding
+$pad-tip-h:   $bar-height * 0.357;  // 10px   at 28px — tooltip horizontal padding
 
 .hypr_bar{
   all: unset;
   font-family: sans-serif;
-  font-size: 14.5px;
+  font-size: $font-base;
   font-weight: bold;
 }
 
@@ -17,27 +31,27 @@ tooltip {
   background-color: rgba(0, 0, 0, 0.5);
   border: 0.0628rem solid #cba6f7;
   border-radius: 0.314rem;
-  padding: 6px 10px;
+  padding: $pad-tip-v $pad-tip-h;
 }
 
 tooltip label {
   color: whitesmoke;
-  font-size: 12px;
+  font-size: $font-sm;
   font-weight: 600;
 }
 
-.left{margin-left: 8px;}
+.left{margin-left: $pad-edge;}
 //.center{background-color: blue;}
-.right{margin-right: 8px;}
+.right{margin-right: $pad-edge;}
 
 
 
 // Arch_logo CSS
 .arch_linux_logo {
-  font-size: 20px;
+  font-size: $font-logo;
   font-weight: 600;
   color: #1793d1;
-  padding: 0px 2px;
+  padding: 0px $pad-logo-h;
 }
 
 
@@ -46,24 +60,24 @@ tooltip label {
 .workspace-container button {
   background: none;
   border: none;
-  padding: 1px;
-  min-width: 20px;
-  min-height: 20px;
+  padding: $pad-ws-btn;
+  min-width: $btn-size;
+  min-height: $btn-size;
 }
 .ws-active label {
   color: #cba6f7;
-  font-size: 12px;
+  font-size: $font-sm;
 }
 
 .ws-inactive label {
   color: #cdd6f4;
-  font-size: 14.5px;
+  font-size: $font-base;
   font-weight: 600;
 }
 
 .ws-inactive:hover label {
   color:#cba6f7 ;
-  font-size: 14.5px;
+  font-size: $font-base+4;
   font-weight: 600;
 }
 
