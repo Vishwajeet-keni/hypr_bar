@@ -116,7 +116,7 @@
 (defwidget wifi []
   (button 
     :class "wifi_but"
-    :onclick "~/.config/eww/scripts/wifi.sh toggle"
+    :onclick "~/.config/eww/hypr_bar/scripts/wifi.sh toggle"
     :tooltip "${wifi-data.ssid}"
     "${wifi-data.icon}"
   )

@@ -11,7 +11,7 @@
     :x "0"
     :y "3"
     :width "98.8%"
-    :height "2%"
+    :height "26px"
   )
   :stacking "fg"
   :exclusive "true"
