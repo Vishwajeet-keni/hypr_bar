@@ -35,6 +35,7 @@
       :class "center"
       :halign "center"
       ;"pass"
+
     )
 
     (box
@@ -43,9 +44,10 @@
       :space-evenly false
       :spacing 8
       (system_stats)
-      (updates)
-      (wifi)
-      (battery)
+      ; (updates)
+      ; (wifi)
+      ; (battery)
+      (menu)
       (time_date_cal)
     )
   )

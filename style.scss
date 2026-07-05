@@ -2,30 +2,38 @@
 $bar-height: 26px;
 
 // Derived sizes — do not edit these directly
-$font-logo:  $bar-height * 0.714;   // 20px  at 28px bar
-$font-base:  $bar-height * 0.518;   // 14.5px at 28px bar
-$font-sm:    $bar-height * 0.429;   // 12px  at 28px bar
-$btn-size:   $bar-height * 0.714;   // 20px  at 28px bar (ws button min size)
+$font-logo: $bar-height * 0.714; // 20px  at 28px bar
+$font-base: $bar-height * 0.518; // 14.5px at 28px bar
+$font-sm: $bar-height * 0.429; // 12px  at 28px bar
+$btn-size: $bar-height * 0.714; // 20px  at 28px bar (ws button min size)
 
 // Derived spacing & padding (bar elements only)
-$pad-edge:    $bar-height * 0.286;  // 8px    at 28px — left/right margin
-$pad-logo-h:  $bar-height * 0.071;  // 2px    at 28px — arch logo h-padding
-$pad-ws-btn:  $bar-height * 0.036;  // 1px    at 28px — workspace button padding
-$pad-tip-v:   $bar-height * 0.214;  // 6px    at 28px — tooltip vertical padding
-$pad-tip-h:   $bar-height * 0.357;  // 10px   at 28px — tooltip horizontal padding
+$pad-edge: $bar-height * 0.286; // 8px    at 28px — left/right margin
+$pad-logo-h: $bar-height * 0.071; // 2px    at 28px — arch logo h-padding
+$pad-ws-btn: $bar-height * 0.036; // 1px    at 28px — workspace button padding
+$pad-tip-v: $bar-height * 0.214; // 6px    at 28px — tooltip vertical padding
+$pad-tip-h: $bar-height * 0.357; // 10px   at 28px — tooltip horizontal padding
 
-.hypr_bar{
+@mixin btn-conf{
+  background: none;
+  border: none;
+  min-width: $btn-size;
+  min-height: $btn-size;
+  padding: 0px;
+}
+
+.hypr_bar {
   all: unset;
-  font-family: sans-serif;
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
   font-size: $font-base;
   font-weight: bold;
 }
 
-.base_div{
+.base_div {
   background-color: rgba($color: black, $alpha: 0.5);
-  border:0.0628rem solid whitesmoke;
+  border: 0.0628rem solid whitesmoke;
   border-radius: 0.314rem;
-  }
+}
 
 tooltip {
   background-color: rgba(0, 0, 0, 0.5);
@@ -40,9 +48,14 @@ tooltip label {
   font-weight: 600;
 }
 
-.left{margin-left: $pad-edge;}
+.left {
+  margin-left: $pad-edge;
+}
+
 //.center{background-color: blue;}
-.right{margin-right: $pad-edge;}
+.right {
+  margin-right: $pad-edge;
+}
 
 
 
@@ -57,13 +70,11 @@ tooltip label {
 
 // Workspace CSS
 
-.workspace-container button {
-  background: none;
-  border: none;
+.workspace-container button{
+  @include btn-conf();
   padding: $pad-ws-btn;
-  min-width: $btn-size;
-  min-height: $btn-size;
 }
+
 .ws-active label {
   color: #cba6f7;
   font-size: $font-sm;
@@ -76,7 +87,7 @@ tooltip label {
 }
 
 .ws-inactive:hover label {
-  color:#cba6f7 ;
+  color: #cba6f7;
   font-size: $font-base+4;
   font-weight: 600;
 }
@@ -86,35 +97,37 @@ tooltip label {
 // System Stats CSS
 
 // CPU - Blue spectrum
-.cpu-idle     { color: #74c7ec; }
-.cpu-low      { color: #89b4fa; }
-.cpu-moderate { color: #89dceb; }
-.cpu-high     { color: #74c7ec; }
-.cpu-critical { color: #f38ba8; }
+.cpu-idle {color: #74c7ec;}
+.cpu-low {color: #89b4fa;}
+.cpu-moderate {color: #89dceb;}
+.cpu-high {color: #74c7ec;}
+
+.cpu-critical {color: #f38ba8;}
 
 // Memory - Purple spectrum
-.mem-normal   { color: #cba6f7; }
-.mem-moderate { color: #b4befe; }
-.mem-high     { color: #cba6f7; }
-.mem-critical { color: #f5c2e7; }
+.mem-normal {color: #cba6f7;}
+.mem-moderate {color: #b4befe;}
+.mem-high {color: #cba6f7;}
+.mem-critical {color: #f5c2e7;}
 
 // Temperature - Orange/Red spectrum
-.temp-cool   { color: #89dceb; }
-.temp-normal { color: #a6e3a1; }
-.temp-warm   { color: #f9e2af; }
-.temp-hot    { color: #fab387; }
-.temp-crit   { color: #f38ba8; }
+.temp-cool {color: #89dceb;}
+.temp-normal {color: #a6e3a1;}
+.temp-warm {color: #f9e2af;}
+.temp-hot {color: #fab387;}
+.temp-crit {color: #f38ba8;}
 
 
+.wifi_but {
+  @include btn-conf();
+}
 
 // Battery CSS
-
-.battery_container .Charging    { color: green; }
-.battery_container .Discharging { color: whitesmoke;}
-.battery_container .critical    { color: red; }
+.battery_container .Charging {color: green;}
+.battery_container .Discharging {color: whitesmoke;}
+.battery_container .critical {color: red;}
 
 // Low Battery Warning CSS
-
 .low-batt-container {
   background-color: rgba(0, 0, 0, 0.85);
   border: 0.0628rem solid whitesmoke;
@@ -150,17 +163,27 @@ tooltip label {
 }
 
 // Time CSS
-
 //.time{color:whitesmoke;}
+
+
+// Menu CSS
+.menu-btn {
+  font-size: $font-logo;
+  @include btn-conf();
+}
 
 
 // Calendar CSS
 .cal {
   background-color: rgba(0, 0, 0, 0.5);
+  // background-color: rgba(255, 255, 255, 0.07);
   border: 0.0628rem solid whitesmoke;
-  border-radius: 0.314rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  // border-radius: 0.314rem;
+  border-radius: 12px;
   padding: 1.5px;
   color: whitesmoke;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 .cal button {
@@ -172,9 +195,4 @@ tooltip label {
 
 .cal button:hover {
   color: whitesmoke;
-}
-
-.wifi_but{
-  background: none;
-  padding: 0px;
 }
