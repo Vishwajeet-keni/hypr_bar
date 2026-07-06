@@ -1,0 +1,59 @@
+// ── Control Center (macOS Style) ──
+.cc-window {
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
+  color: #ffffff;
+  padding: 16px;
+  background: transparent;
+  
+  .cc-row        { margin-bottom: 12px; }
+  .right-toggles { margin-left: 12px; }
+  .sub-grid      { margin-top: 12px; }
+  .slider-box    { margin-bottom: 12px; padding: 12px 16px; }
+}
+
+.cc-block-glass {
+  @include liquid-glass;
+}
+
+.network-box {
+  padding: 12px;
+  .cc-item { padding: 6px 0; }
+}
+
+.focus-box {
+  padding: 0 14px;
+}
+
+.title { font-size: 14px; font-weight: bold; color: #ffffff; }
+.subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
+.micro-title { font-size: 10px; color: #ffffff; }
+
+.icon-blue, .icon-purple, .icon-gray, .icon-large {
+  font-size: 16px;
+  border-radius: 50%;
+  padding: 8px;
+  margin-right: 12px;
+  min-width: 20px;
+  min-height: 20px;
+}
+.icon-blue   { background-color: #007aff; }
+.icon-purple { background-color: #5856d6; }
+.icon-gray   { background-color: rgba(255, 255, 255, 0.15); }
+.icon-large  { font-size: 20px; padding: 0; margin: 0; background: none; }
+
+.cc-slider trough {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  min-height: 24px;
+  margin-top: 6px;
+  
+  highlight {
+    background-color: #ffffff;
+    border-radius: 8px;
+  }
+  slider {
+    min-width: 0;
+    min-height: 0;
+    opacity: 0;
+  }
+}

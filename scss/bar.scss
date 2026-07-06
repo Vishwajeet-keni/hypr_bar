@@ -1,0 +1,114 @@
+// ── Base Bar Styles ──
+.hypr_bar {
+  all: unset;
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
+  font-size: $font-base;
+  font-weight: bold;
+}
+
+.base_div {
+  background-color: rgba(black, 0.5);
+  border: 0.0628rem solid whitesmoke;
+  border-radius: 0.314rem;
+}
+
+.left { margin-left: $pad-edge; }
+.right { margin-right: $pad-edge; }
+
+// ── Bar Modules ──
+.arch_linux_logo {
+  font-size: $font-logo;
+  font-weight: 600;
+  color: #1793d1;
+  padding: 0px $pad-logo-h;
+}
+
+.workspace-container button {
+  @include btn-conf();
+  padding: $pad-ws-btn;
+}
+
+.ws-active label {
+  color: #cba6f7;
+  font-size: $font-sm;
+}
+
+.ws-inactive label {
+  color: #cdd6f4;
+  font-size: $font-base;
+  font-weight: 600;
+}
+
+.ws-inactive:hover label {
+  color: #cba6f7;
+  font-size: $font-base + 4;
+  font-weight: 600;
+}
+
+.wifi_but {
+  @include btn-conf();
+}
+
+.menu-btn {
+  font-size: $font-logo;
+  @include btn-conf();
+}
+
+// ── Tooltips & Generic Popups ──
+tooltip {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 0.0628rem solid #cba6f7;
+  border-radius: 0.314rem;
+  padding: $pad-tip-v $pad-tip-h;
+
+  label {
+    color: whitesmoke;
+    font-size: $font-sm;
+    font-weight: 600;
+  }
+}
+
+// ── Color Thresholds (System Data) ──
+.cpu-idle     { color: #74c7ec; }
+.cpu-low      { color: #89b4fa; }
+.cpu-moderate { color: #89dceb; }
+.cpu-high     { color: #74c7ec; }
+.cpu-critical { color: #f38ba8; }
+
+.mem-normal   { color: #cba6f7; }
+.mem-moderate { color: #b4befe; }
+.mem-high     { color: #cba6f7; }
+.mem-critical { color: #f5c2e7; }
+
+.temp-cool    { color: #89dceb; }
+.temp-normal  { color: #a6e3a1; }
+.temp-warm    { color: #f9e2af; }
+.temp-hot     { color: #fab387; }
+.temp-crit    { color: #f38ba8; }
+
+.battery_container {
+  .Charging    { color: green; }
+  .Discharging { color: whitesmoke; }
+  .critical    { color: red; }
+}
+
+.low-batt-container {
+  background-color: rgba(0, 0, 0, 0.85);
+  border: 0.0628rem solid whitesmoke;
+  border-radius: 0.314rem;
+  padding: 20px;
+}
+
+.low-batt-icon { color: red; font-size: 28px; }
+.low-batt-msg  { color: whitesmoke; font-size: 15px; font-weight: bold; }
+.low-batt-sub  { color: #aaaaaa; font-size: 12px; }
+.low-batt-btn  {
+  color: whitesmoke;
+  border: 0.0628rem solid whitesmoke;
+  border-radius: 0.314rem;
+  padding: 4px 16px;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}

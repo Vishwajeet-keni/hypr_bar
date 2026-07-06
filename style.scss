@@ -1,198 +1,234 @@
-// ── Single source of truth ──
-$bar-height: 26px;
+@import "scss/variables";
+@import "scss/bar";
+@import "scss/calendar";
+@import "scss/control_center";
+// @import "scss/bar";
+// @import "scss/calendar";
+// @import "scss/control_center";
+// // ── Single source of truth ──
+// $bar-height: 26px;
 
-// Derived sizes — do not edit these directly
-$font-logo: $bar-height * 0.714; // 20px  at 28px bar
-$font-base: $bar-height * 0.518; // 14.5px at 28px bar
-$font-sm: $bar-height * 0.429; // 12px  at 28px bar
-$btn-size: $bar-height * 0.714; // 20px  at 28px bar (ws button min size)
+// // Derived sizes — do not edit these directly
+// $font-logo: $bar-height * 0.714; // 20px  at 28px bar
+// $font-base: $bar-height * 0.518; // 14.5px at 28px bar
+// $font-sm: $bar-height * 0.429;   // 12px  at 28px bar
+// $btn-size: $bar-height * 0.714;  // 20px  at 28px bar (ws button min size)
 
-// Derived spacing & padding (bar elements only)
-$pad-edge: $bar-height * 0.286; // 8px    at 28px — left/right margin
-$pad-logo-h: $bar-height * 0.071; // 2px    at 28px — arch logo h-padding
-$pad-ws-btn: $bar-height * 0.036; // 1px    at 28px — workspace button padding
-$pad-tip-v: $bar-height * 0.214; // 6px    at 28px — tooltip vertical padding
-$pad-tip-h: $bar-height * 0.357; // 10px   at 28px — tooltip horizontal padding
+// // Derived spacing & padding (bar elements only)
+// $pad-edge: $bar-height * 0.286;   // 8px    at 28px — left/right margin
+// $pad-logo-h: $bar-height * 0.071; // 2px    at 28px — arch logo h-padding
+// $pad-ws-btn: $bar-height * 0.036; // 1px    at 28px — workspace button padding
+// $pad-tip-v: $bar-height * 0.214;  // 6px    at 28px — tooltip vertical padding
+// $pad-tip-h: $bar-height * 0.357;  // 10px   at 28px — tooltip horizontal padding
 
-@mixin btn-conf{
-  background: none;
-  border: none;
-  min-width: $btn-size;
-  min-height: $btn-size;
-  padding: 0px;
-}
+// @mixin btn-conf {
+//   background: none;
+//   border: none;
+//   min-width: $btn-size;
+//   min-height: $btn-size;
+//   padding: 0px;
+// }
 
-.hypr_bar {
-  all: unset;
-  font-family: "JetBrainsMono Nerd Font", sans-serif;
-  font-size: $font-base;
-  font-weight: bold;
-}
+// // ── Reusable macOS Liquid Glass Snippet ──
+// @mixin liquid-glass {
+//   background-color: rgba(255, 255, 255, 0.07);
+//   border: 1px solid rgba(255, 255, 255, 0.15);
+//   border-top: 1px solid rgba(255, 255, 255, 0.3); // specular highlight rim
+//   border-radius: 14px;
+//   box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.25);
+// }
 
-.base_div {
-  background-color: rgba($color: black, $alpha: 0.5);
-  border: 0.0628rem solid whitesmoke;
-  border-radius: 0.314rem;
-}
+// // ── Base Bar Styles ──
+// .hypr_bar {
+//   all: unset;
+//   font-family: "JetBrainsMono Nerd Font", sans-serif;
+//   font-size: $font-base;
+//   font-weight: bold;
+// }
 
-tooltip {
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 0.0628rem solid #cba6f7;
-  border-radius: 0.314rem;
-  padding: $pad-tip-v $pad-tip-h;
-}
+// .base_div {
+//   background-color: rgba(black, 0.5);
+//   border: 0.0628rem solid whitesmoke;
+//   border-radius: 0.314rem;
+// }
 
-tooltip label {
-  color: whitesmoke;
-  font-size: $font-sm;
-  font-weight: 600;
-}
+// .left { margin-left: $pad-edge; }
+// .right { margin-right: $pad-edge; }
 
-.left {
-  margin-left: $pad-edge;
-}
+// // ── Bar Modules ──
+// .arch_linux_logo {
+//   font-size: $font-logo;
+//   font-weight: 600;
+//   color: #1793d1;
+//   padding: 0px $pad-logo-h;
+// }
 
-//.center{background-color: blue;}
-.right {
-  margin-right: $pad-edge;
-}
+// .workspace-container button {
+//   @include btn-conf();
+//   padding: $pad-ws-btn;
+// }
 
+// .ws-active label {
+//   color: #cba6f7;
+//   font-size: $font-sm;
+// }
 
+// .ws-inactive label {
+//   color: #cdd6f4;
+//   font-size: $font-base;
+//   font-weight: 600;
+// }
 
-// Arch_logo CSS
-.arch_linux_logo {
-  font-size: $font-logo;
-  font-weight: 600;
-  color: #1793d1;
-  padding: 0px $pad-logo-h;
-}
+// .ws-inactive:hover label {
+//   color: #cba6f7;
+//   font-size: $font-base + 4;
+//   font-weight: 600;
+// }
 
+// .wifi_but {
+//   @include btn-conf();
+// }
 
-// Workspace CSS
+// .menu-btn {
+//   font-size: $font-logo;
+//   @include btn-conf();
+// }
 
-.workspace-container button{
-  @include btn-conf();
-  padding: $pad-ws-btn;
-}
+// // ── Tooltips & Generic Popups ──
+// tooltip {
+//   background-color: rgba(0, 0, 0, 0.5);
+//   border: 0.0628rem solid #cba6f7;
+//   border-radius: 0.314rem;
+//   padding: $pad-tip-v $pad-tip-h;
 
-.ws-active label {
-  color: #cba6f7;
-  font-size: $font-sm;
-}
+//   label {
+//     color: whitesmoke;
+//     font-size: $font-sm;
+//     font-weight: 600;
+//   }
+// }
 
-.ws-inactive label {
-  color: #cdd6f4;
-  font-size: $font-base;
-  font-weight: 600;
-}
+// .cal {
+//   background-color: rgba(0, 0, 0, 0.5);
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+//   border-radius: 12px;
+//   padding: 1.5px;
+//   color: whitesmoke;
+//   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
-.ws-inactive:hover label {
-  color: #cba6f7;
-  font-size: $font-base+4;
-  font-weight: 600;
-}
+//   button {
+//     color: #cba6f7;
+//     border: none;
+//     background: none;
+//     padding: 1px 1px;
 
+//     &:hover {
+//       color: whitesmoke;
+//     }
+//   }
+// }
 
+// // ── Color Thresholds (System Data) ──
+// .cpu-idle     { color: #74c7ec; }
+// .cpu-low      { color: #89b4fa; }
+// .cpu-moderate { color: #89dceb; }
+// .cpu-high     { color: #74c7ec; }
+// .cpu-critical { color: #f38ba8; }
 
-// System Stats CSS
+// .mem-normal   { color: #cba6f7; }
+// .mem-moderate { color: #b4befe; }
+// .mem-high     { color: #cba6f7; }
+// .mem-critical { color: #f5c2e7; }
 
-// CPU - Blue spectrum
-.cpu-idle {color: #74c7ec;}
-.cpu-low {color: #89b4fa;}
-.cpu-moderate {color: #89dceb;}
-.cpu-high {color: #74c7ec;}
+// .temp-cool    { color: #89dceb; }
+// .temp-normal  { color: #a6e3a1; }
+// .temp-warm    { color: #f9e2af; }
+// .temp-hot     { color: #fab387; }
+// .temp-crit    { color: #f38ba8; }
 
-.cpu-critical {color: #f38ba8;}
+// .battery_container {
+//   .Charging    { color: green; }
+//   .Discharging { color: whitesmoke; }
+//   .critical    { color: red; }
+// }
 
-// Memory - Purple spectrum
-.mem-normal {color: #cba6f7;}
-.mem-moderate {color: #b4befe;}
-.mem-high {color: #cba6f7;}
-.mem-critical {color: #f5c2e7;}
+// .low-batt-container {
+//   background-color: rgba(0, 0, 0, 0.85);
+//   border: 0.0628rem solid whitesmoke;
+//   border-radius: 0.314rem;
+//   padding: 20px;
+// }
 
-// Temperature - Orange/Red spectrum
-.temp-cool {color: #89dceb;}
-.temp-normal {color: #a6e3a1;}
-.temp-warm {color: #f9e2af;}
-.temp-hot {color: #fab387;}
-.temp-crit {color: #f38ba8;}
+// .low-batt-icon { color: red; font-size: 28px; }
+// .low-batt-msg  { color: whitesmoke; font-size: 15px; font-weight: bold; }
+// .low-batt-sub  { color: #aaaaaa; font-size: 12px; }
+// .low-batt-btn  {
+//   color: whitesmoke;
+//   border: 0.0628rem solid whitesmoke;
+//   border-radius: 0.314rem;
+//   padding: 4px 16px;
+  
+//   &:hover {
+//     background-color: rgba(255, 255, 255, 0.1);
+//   }
+// }
 
+// // ── Control Center (macOS Style) ──
+// .cc-window {
+//   font-family: "JetBrainsMono Nerd Font", sans-serif;
+//   color: #ffffff;
+//   padding: 16px;
+//   background: transparent;
+  
+//   .cc-row        { margin-bottom: 12px; }
+//   .right-toggles { margin-left: 12px; }
+//   .sub-grid      { margin-top: 12px; }
+//   .slider-box    { margin-bottom: 12px; padding: 12px 16px; }
+// }
 
-.wifi_but {
-  @include btn-conf();
-}
+// .cc-block-glass {
+//   @include liquid-glass;
+// }
 
-// Battery CSS
-.battery_container .Charging {color: green;}
-.battery_container .Discharging {color: whitesmoke;}
-.battery_container .critical {color: red;}
+// .network-box {
+//   padding: 12px;
+//   .cc-item { padding: 6px 0; }
+// }
 
-// Low Battery Warning CSS
-.low-batt-container {
-  background-color: rgba(0, 0, 0, 0.85);
-  border: 0.0628rem solid whitesmoke;
-  border-radius: 0.314rem;
-  padding: 20px;
-}
+// .focus-box {
+//   padding: 0 14px;
+// }
 
-.low-batt-icon {
-  color: red;
-  font-size: 28px;
-}
+// .title { font-size: 14px; font-weight: bold; color: #ffffff; }
+// .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
+// .micro-title { font-size: 10px; color: #ffffff; }
 
-.low-batt-msg {
-  color: whitesmoke;
-  font-size: 15px;
-  font-weight: bold;
-}
+// .icon-blue, .icon-purple, .icon-gray, .icon-large {
+//   font-size: 16px;
+//   border-radius: 50%;
+//   padding: 8px;
+//   margin-right: 12px;
+//   min-width: 20px;
+//   min-height: 20px;
+// }
+// .icon-blue   { background-color: #007aff; }
+// .icon-purple { background-color: #5856d6; }
+// .icon-gray   { background-color: rgba(255, 255, 255, 0.15); }
+// .icon-large  { font-size: 20px; padding: 0; margin: 0; background: none; }
 
-.low-batt-sub {
-  color: #aaaaaa;
-  font-size: 12px;
-}
-
-.low-batt-btn {
-  color: whitesmoke;
-  border: 0.0628rem solid whitesmoke;
-  border-radius: 0.314rem;
-  padding: 4px 16px;
-}
-
-.low-batt-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-// Time CSS
-//.time{color:whitesmoke;}
-
-
-// Menu CSS
-.menu-btn {
-  font-size: $font-logo;
-  @include btn-conf();
-}
-
-
-// Calendar CSS
-.cal {
-  background-color: rgba(0, 0, 0, 0.5);
-  // background-color: rgba(255, 255, 255, 0.07);
-  border: 0.0628rem solid whitesmoke;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  // border-radius: 0.314rem;
-  border-radius: 12px;
-  padding: 1.5px;
-  color: whitesmoke;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-.cal button {
-  color: #cba6f7;
-  border: none;
-  background: none;
-  padding: 1px 1px;
-}
-
-.cal button:hover {
-  color: whitesmoke;
-}
+// .cc-slider trough {
+//   background-color: rgba(255, 255, 255, 0.15);
+//   border-radius: 8px;
+//   min-height: 24px;
+//   margin-top: 6px;
+  
+//   highlight {
+//     background-color: #ffffff;
+//     border-radius: 8px;
+//   }
+//   slider {
+//     min-width: 0;
+//     min-height: 0;
+//     opacity: 0;
+//   }
+// }

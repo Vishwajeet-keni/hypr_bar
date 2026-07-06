@@ -1,4 +1,4 @@
-;including modules 
+;including modules
 (include "hypr_bar/widgets.yuck")
 
 (defwindow hypr_bar
@@ -16,12 +16,12 @@
   :stacking "fg"
   :exclusive "true"
   :focusable "false"
-
+  
   (centerbox
     :class "base_div"
     :orientation "h"
     :spacing 10
-
+    
     (box
       :class "left"
       :halign "start"
@@ -30,14 +30,14 @@
       (Arch_logo)
       (workspace)
     )
-
+    
     (box
       :class "center"
       :halign "center"
       ;"pass"
-
+      
     )
-
+    
     (box
       :class "right"
       :halign "end"
@@ -73,8 +73,8 @@
 (defwindow cal_popup
   :monitor 0
   :windowtype "normal"
-;  :windowtype "popup"    ; was "normal"
-;  :focusable  "false"
+  ;  :windowtype "popup"    ; was "normal"
+  ;  :focusable  "false"
   :geometry (geometry
     :anchor "top right"
     :x "8px"
@@ -86,8 +86,23 @@
   (eventbox
     :onhoverlost "eww close cal_popup"
     (calendar :class "cal"
-              :day {EWW_TIME.day}
-              :month {EWW_TIME.month}
-              :year {EWW_TIME.year})
+      :day {EWW_TIME.day}
+      :month {EWW_TIME.month}
+    :year {EWW_TIME.year})
   )
+)
+
+
+
+;; The actual Window declaration
+(defwindow control_panel
+  :monitor 0
+  :geometry (geometry :x "8px" 
+                      :y "8px" 
+                      :anchor "top right" 
+                      :width "360px" 
+                      :height "450px") ;; Explicitly declaring height prevents layout load bugs
+  :stacking "overlay" ;; Changed from "fg" to "overlay" to sit neatly above everything else
+  :focusable "false"
+  (control_center)
 )

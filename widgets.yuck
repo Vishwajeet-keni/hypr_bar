@@ -165,6 +165,8 @@
     (wifi)
     (battery)
     (button :class "menu-btn"
+            :onclick "eww open control_panel"
+            :onhoverlost "sleep 0.3 && eww close control_panel 2>/dev/null"
       (label :text "󰟡"  :class "menu-icon")
     ) 
   ) 
@@ -180,6 +182,61 @@
     :onhoverlost "sleep 0.3 && eww close cal_popup 2>/dev/null"
     (box :class "time_container"
       (label :class "time" :text time_poll)
+    )
+  )
+)
+
+
+
+;=====Control_center===========================================
+(defwidget control_center []
+  (eventbox :onhoverlost "sleep 0.1 && eww close control_panel"
+    (box :class "cc-window" :orientation "v" :space-evenly false
+      
+      ;; Top Row: Connections & Quick Actions
+      (box :class "cc-row" :orientation "h" :space-evenly true
+        
+        ;; Left Block: Wi-Fi, Bluetooth, AirDrop container
+        (box :class "cc-block-glass network-box" :orientation "v" :space-evenly true
+          (box :class "cc-item" :orientation "h" :space-evenly false
+            (label :text "󰤨" :class "icon-blue")
+            (box :orientation "v" :space-evenly false :class "cc-text"
+              (label :text "Wi-Fi" :class "title" :halign "start")
+              (label :text "Connected" :class "subtitle" :halign "start")))
+          (box :class "cc-item" :orientation "h" :space-evenly false
+            (label :text "󰂯" :class "icon-blue")
+            (box :orientation "v" :space-evenly false :class "cc-text"
+              (label :text "Bluetooth" :class "title" :halign "start")
+              (label :text "On" :class "subtitle" :halign "start")))
+          (box :class "cc-item" :orientation "h" :space-evenly false
+            (label :text "󰔡" :class "icon-gray")
+            (box :orientation "v" :space-evenly false :class "cc-text"
+              (label :text "AirDrop" :class "title" :halign "start")
+              (label :text "Off" :class "subtitle" :halign "start"))))
+        
+        ;; Right Block: Stacked squares
+        (box :orientation "v" :space-evenly true :class "right-toggles"
+          (box :class "cc-block-glass focus-box" :orientation "h" :space-evenly false
+            (label :text "󰖔" :class "icon-purple")
+            (label :text "Focus" :class "title" :valign "center"))
+          
+          (box :orientation "h" :space-evenly true :class "sub-grid"
+            (box :class "cc-block-glass" :orientation "v" :space-evenly true
+              (label :text "󰕰" :class "icon-large")
+              (label :text "Stage" :class "micro-title"))
+            (box :class "cc-block-glass" :orientation "v" :space-evenly true
+              (label :text "󰕟" :class "icon-large")
+              (label :text "Mirror" :class "micro-title")))))
+      
+      ;; Middle Row: Display Slider
+      (box :class "cc-block-glass slider-box" :orientation "v" :space-evenly false
+        (label :text "Display" :class "title" :halign "start")
+        (scale :class "cc-slider" :min 30 :max 101 :value 70))
+        
+      ;; Bottom Row: Sound Slider
+      (box :class "cc-block-glass slider-box" :orientation "v" :space-evenly false
+        (label :text "Sound" :class "title" :halign "start")
+        (scale :class "cc-slider" :min 0 :max 101 :value 50))
     )
   )
 )
