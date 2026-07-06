@@ -1,0 +1,28 @@
+;=====Battery====================================
+(defpoll battery-data :interval "5s" "~/.config/eww/hypr_bar/scripts/battery.sh")  
+
+(defwidget battery []
+  (box  :class "battery_container" 
+        :orientation "h" 
+        :tooltip "${battery-data.class}"
+
+    (label  :text "${battery-data.icon}"   :class "${battery-data.class}")
+    (label  :text "${battery-data.level}%" :class "${battery-data.class}")
+  )
+)
+
+;=====Low_Battery_Warning==========================
+(defwidget low_batt_warning []
+  (box :class "low-batt-container"
+       :orientation "v"
+       :spacing 12
+
+    (label  :text "Battery is low!"           :class "low-batt-msg")
+    (label  :text "Please connect to charger" :class "low-batt-sub" )
+
+    (button :class "low-batt-btn"
+            :onclick "eww close low_batt_warning"
+            "OK"
+    )
+  )
+)

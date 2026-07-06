@@ -1,0 +1,12 @@
+;=====Time_Date_Calender=======================================
+(defpoll time_poll :interval "10s" "date '+%a %d-%b %H:%M'")
+
+(defwidget time_date_cal []
+  (eventbox
+    :onclick "eww open cal_popup"
+    :onhoverlost "sleep 0.3 && eww close cal_popup 2>/dev/null"
+    (box :class "time_container"
+      (label :class "time" :text time_poll)
+    )
+  )
+)

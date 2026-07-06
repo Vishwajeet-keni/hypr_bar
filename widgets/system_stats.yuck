@@ -1,0 +1,46 @@
+;=====System_Stats===============================
+;cpu_usage ,mem_usage ,temp
+
+(defpoll System_data :interval "2s" "~/.config/eww/hypr_bar/scripts/system_stats.sh")
+
+;Resuable function
+(defwidget status_item [class_name spacing x_icon x_name x_state] 
+  (box  :class        class_name
+        :orientation  "h"
+        :space-evenly false
+        :spacing      spacing
+
+      (label  :text "${x_icon}" :class "${x_state}")
+      (label  :text "${x_name}" :class "${x_state}")
+  ) 
+)
+
+(defwidget system_stats [] 
+
+  (box  :class        "system-stats-container"
+        :orientation  "h"
+        :space-evenly false
+        :spacing       8
+
+      (status_item  :class_name "cpu-container"
+                    :spacing     8  
+                    :x_icon     "${System_data.cpu_icon}"
+                    :x_name     "${System_data.cpu_usage}"
+                    :x_state    "${System_data.cpu_state}"
+      )
+
+      (status_item  :class_name "memory-container"
+                    :spacing     8  
+                    :x_icon     "${System_data.memory_icon}"
+                    :x_name     "${System_data.memory_usage}%"
+                    :x_state    "${System_data.memory_state}"
+      )
+
+      (status_item  :class_name "temp-container"
+                    :spacing     5  
+                    :x_icon     "${System_data.temp_icon}"
+                    :x_name     "${System_data.temp_lvl}°C"
+                    :x_state    "${System_data.temp_state}" 
+      ) 
+  )
+)

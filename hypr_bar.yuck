@@ -1,6 +1,16 @@
-;including modules
-(include "hypr_bar/widgets.yuck")
+;including widgets
+  (include "hypr_bar/widgets/Arch_logo.yuck")
+  (include "hypr_bar/widgets/workspace.yuck")
+  (include "hypr_bar/widgets/control_center.yuck")
+  (include "hypr_bar/widgets/system_stats.yuck")
+  (include "hypr_bar/widgets/updates.yuck")
+  (include "hypr_bar/widgets/wifi.yuck")
+  (include "hypr_bar/widgets/battery.yuck")
+  (include "hypr_bar/widgets/menu.yuck")
+  (include "hypr_bar/widgets/time_date_cal.yuck")
 
+
+;;hypr_var
 (defwindow hypr_bar
   :monitor 0
   :windowtype "dock"
@@ -47,7 +57,7 @@
       ; (updates)
       ; (wifi)
       ; (battery)
-      (menu)
+      (menu)  ;===> includes updates wifi & battery
       (time_date_cal)
     )
   )

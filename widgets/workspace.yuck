@@ -1,0 +1,23 @@
+;=====Workspace==================================
+(defvar ws-dot "")
+
+(defpoll workspace_data :interval "0.5s"
+  :initial `{"current": 1, "workspaces": [1]}` `~/.config/eww/hypr_bar/scripts/workspaces.sh`)
+
+(defwidget ws-btn [id]
+  (button :class {"${workspace_data.current}" == "${id}" ? "ws-active" : "ws-inactive"}
+          :onclick `hyprctl dispatch workspace ${id}`
+      (label :text {"${workspace_data.current}" == "${id}" ? ws-dot : "${id}"})
+  )
+)
+
+(defwidget workspace []
+  (box :class       "workspace-container"
+       :orientation "h"
+       :spacing      1
+
+      (for ws in {workspace_data.workspaces}
+        (ws-btn :id "${ws}")
+      )
+  )
+)

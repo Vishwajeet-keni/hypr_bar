@@ -1,0 +1,21 @@
+;=====PKG_Updates_Avalable=======================
+(defvar icon-updates "")
+
+(defpoll update_data :interval "3600s" "~/.config/eww/hypr_bar/scripts/updates.sh")
+
+(defwidget updates []
+  (tooltip
+
+    (box :orientation "v" :spacing 4
+      (label :text "pacman: ${update_data.pacman_u}")
+      (label :text "yay: ${update_data.yay_u}")
+    )
+
+    (box :class "updates-container"
+         :orientation "h"
+         :spacing 8
+      (label :text icon-updates)
+      (label :text "${update_data.count}")
+    )
+  )
+)

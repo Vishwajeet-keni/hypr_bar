@@ -1,0 +1,16 @@
+;=====Menu=====================================================
+(defwidget menu []
+  (box :class "menu-container"
+       :orientation "h"
+       :space-evenly false
+       :spacing 8
+    (updates)
+    (wifi)
+    (battery)
+    (button :class "menu-btn"
+            :onclick "eww open control_panel"
+            :onhoverlost "sleep 0.3 && eww close control_panel 2>/dev/null"
+      (label :text "󰟡"  :class "menu-icon")
+    ) 
+  ) 
+) 

@@ -1,0 +1,10 @@
+;=====Arch_Linux_Logo============================
+(defvar arch_logo "")
+
+(defwidget Arch_logo []
+  (box  :orientation  "h"
+        :spacing       0
+
+      (label  :text arch_logo :class "arch_linux_logo")
+  )
+)
