@@ -1,0 +1,28 @@
+;=====Control Center — Reusable Tiles===========================
+; Generic building blocks used by control_center.yuck. These widgets
+; know nothing about wifi/bluetooth/brightness — they just render
+; whatever args they're passed. This is what replaces the copy-pasted
+; Wi-Fi/Bluetooth/AirDrop rows, Stage/Mirror tiles, and Display/Sound
+; sliders that used to be written out by hand three times / twice.
+
+; A clickable row: icon + title + subtitle. Used for Wi-Fi, Bluetooth,
+; AirDrop.
+(defwidget cc-toggle-tile [icon icon-class title subtitle onclick]
+  (button :class "cc-toggle-btn" :onclick onclick
+    (box :class "cc-item" :orientation "h" :space-evenly false
+      (label :text icon :class icon-class)
+      (box :orientation "v" :space-evenly false :class "cc-text"
+        (label :text title :class "title" :halign "start")
+        (label :text subtitle :class "subtitle" :halign "start")))))
+
+; A small square tile: icon over a label. Used for Stage, Mirror.
+(defwidget cc-icon-tile [icon title]
+  (box :class "cc-block-glass" :orientation "v" :space-evenly true
+    (label :text icon :class "icon-large")
+    (label :text title :class "micro-title")))
+
+; A labeled slider. Used for Display, Sound.
+(defwidget cc-slider [label value min max onchange]
+  (box :class "cc-block-glass slider-box" :orientation "v" :space-evenly false
+    (label :text label :class "title" :halign "start")
+    (scale :class "cc-slider" :min min :max max :value value :onchange onchange)))

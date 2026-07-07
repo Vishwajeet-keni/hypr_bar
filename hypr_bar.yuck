@@ -1,13 +1,15 @@
 ;including widgets
-  (include "hypr_bar/widgets/Arch_logo.yuck")
-  (include "hypr_bar/widgets/workspace.yuck")
-  (include "hypr_bar/widgets/control_center.yuck")
-  (include "hypr_bar/widgets/system_stats.yuck")
-  (include "hypr_bar/widgets/updates.yuck")
-  (include "hypr_bar/widgets/wifi.yuck")
-  (include "hypr_bar/widgets/battery.yuck")
-  (include "hypr_bar/widgets/menu.yuck")
-  (include "hypr_bar/widgets/time_date_cal.yuck")
+  (include "hypr_bar/widgets/bar/Arch_logo.yuck")
+  (include "hypr_bar/widgets/bar/workspace.yuck")
+  (include "hypr_bar/widgets/bar/system_stats.yuck")
+  (include "hypr_bar/widgets/bar/updates.yuck")
+  (include "hypr_bar/widgets/bar/wifi.yuck")
+  (include "hypr_bar/widgets/bar/battery.yuck")
+  (include "hypr_bar/widgets/bar/menu.yuck")
+  (include "hypr_bar/widgets/bar/time_date_cal.yuck")
+
+  (include "hypr_bar/widgets/control_center/control_center.yuck")
+  (include "hypr_bar/widgets/control_center/tiles.yuck")
 
 
 ;;hypr_var
