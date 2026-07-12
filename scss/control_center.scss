@@ -1,75 +1,14 @@
-// // ── Control Center (macOS Style) ──
-// .cc-window {
-//   font-family: "JetBrainsMono Nerd Font", sans-serif;
-//   color: #ffffff;
-//   padding: 16px;
-//   background: transparent;
-  
-//   .cc-row        { margin-bottom: 12px; }
-//   .right-toggles { margin-left: 12px; }
-//   .sub-grid      { margin-top: 12px; }
-//   .slider-box    { margin-bottom: 12px; padding: 12px 16px; }
-// }
-
-// .cc-block-glass {
-//   @include liquid-glass;
-// }
-
-// .network-box {
-//   padding: 12px;
-//   .cc-item { padding: 6px 0; }
-// }
-
-// .focus-box {
-//   padding: 0 14px;
-// }
-
-// .title { font-size: 14px; font-weight: bold; color: #ffffff; }
-// .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
-// .micro-title { font-size: 10px; color: #ffffff; }
-
-// .icon-blue, .icon-purple, .icon-gray, .icon-large {
-//   font-size: 16px;
-//   border-radius: 50%;
-//   padding: 8px;
-//   margin-right: 12px;
-//   min-width: 20px;
-//   min-height: 20px;
-// }
-// .icon-blue   { background-color: #007aff; }
-// .icon-purple { background-color: #5856d6; }
-// .icon-gray   { background-color: rgba(255, 255, 255, 0.15); }
-// .icon-large  { font-size: 20px; padding: 0; margin: 0; background: none; }
-
-// .cc-slider trough {
-//   background-color: rgba(255, 255, 255, 0.15);
-//   border-radius: 8px;
-//   min-height: 24px;
-//   margin-top: 6px;
-  
-//   highlight {
-//     background-color: #ffffff;
-//     border-radius: 8px;
-//   }
-//   slider {
-//     min-width: 0;
-//     min-height: 0;
-//     opacity: 0;
-//   }
-// }
-
-
-// ── Control Center (macOS Style) ──
+// ── Control Center (macOS style, Catppuccin Mocha) ──
 .cc-window {
   font-family: "JetBrainsMono Nerd Font", sans-serif;
-  color: #ffffff;
+  color: $text-primary;
   padding: 16px;
   background: transparent;
-  
+
   .cc-row        { margin-bottom: 12px; }
   .right-toggles { margin-left: 12px; }
   .sub-grid      { margin-top: 12px; }
-  .slider-box    { margin-bottom: 12px; padding: 12px 16px; }
+  .slider-box    { margin-bottom: 12px; padding: 5px 16px; }
 }
 
 .cc-block-glass {
@@ -78,7 +17,7 @@
 
 .network-box {
   padding: 12px;
-  .cc-item { padding: 6px 0; }
+  .cc-item { padding: 6px 4px; }
 }
 
 // cc-toggle-tile wraps its row in a <button> so it's clickable —
@@ -91,8 +30,8 @@
   min-height: 0;
 
   &:hover .cc-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
   }
 }
 
@@ -100,31 +39,36 @@
   padding: 0 14px;
 }
 
-.title { font-size: 14px; font-weight: bold; color: #ffffff; }
-.subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
-.micro-title { font-size: 10px; color: #ffffff; }
+.title       { font-size: 14px; font-weight: bold; color: $text-primary; }
+.subtitle    { font-size: 11px; color: $text-muted; }
+.micro-title { font-size: 10px; color: $text-primary; }
 
+// Rounded-square chips, not circles — matches the 14px radius language
+// used everywhere else (.cc-block-glass), so tiles read as one family.
 .icon-blue, .icon-purple, .icon-gray, .icon-large {
   font-size: 16px;
-  border-radius: 50%;
+  border-radius: 10px;
   padding: 8px;
   margin-right: 12px;
   min-width: 20px;
   min-height: 20px;
 }
-.icon-blue   { background-color: #007aff; }
-.icon-purple { background-color: #5856d6; }
-.icon-gray   { background-color: rgba(255, 255, 255, 0.15); }
-.icon-large  { font-size: 20px; padding: 0; margin: 0; background: none; }
+
+// Bar's own accent colors, reused — dark glyph color for contrast since
+// both accents are light tones (white-on-light reads washed out).
+.icon-blue   { background-color: $accent-blue;  color: $bg-dark; }
+.icon-purple { background-color: $accent-mauve; color: $bg-dark; }
+.icon-gray   { background-color: rgba(255, 255, 255, 0.12); color: $text-primary; }
+.icon-large  { font-size: 20px; padding: 0; margin: 0; background: none; color: $text-primary; }
 
 .cc-slider trough {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  min-height: 24px;
+  min-height: 20px;
   margin-top: 6px;
-  
+
   highlight {
-    background-color: #ffffff;
+    background-color: $accent-mauve;
     border-radius: 8px;
   }
   slider {

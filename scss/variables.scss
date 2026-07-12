@@ -14,6 +14,15 @@ $pad-ws-btn: $bar-height * 0.036; // 1px    at 28px — workspace button padding
 $pad-tip-v: $bar-height * 0.214;  // 6px    at 28px — tooltip vertical padding
 $pad-tip-h: $bar-height * 0.357;  // 10px   at 28px — tooltip horizontal padding
 
+// ── Shared Catppuccin Mocha palette — single source for bar + control center ──
+// bar.scss's #cba6f7 / #89b4fa are the same colors, kept here so new UI
+// (like the control center) pulls from one place instead of re-guessing hex values.
+$accent-mauve: #cba6f7; // active workspace, tooltip borders, calendar buttons
+$accent-blue:  #89b4fa; // cpu-low state
+$text-primary: #cdd6f4; // inactive workspace text
+$text-muted:   rgba(205, 214, 244, 0.55);
+$bg-dark:      #11111b; // catppuccin "crust" — for text on light accent chips
+
 @mixin btn-conf {
   background: none;
   border: none;
@@ -24,9 +33,16 @@ $pad-tip-h: $bar-height * 0.357;  // 10px   at 28px — tooltip horizontal paddi
 
 // ── Reusable macOS Liquid Glass Snippet ──
 @mixin liquid-glass {
-  background-color: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-top: 1px solid rgba(255, 255, 255, 0.3); // specular highlight rim
+  background-color: rgba(255, 255, 255, 0.06);
+
+  background-image:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.16), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.35); // specular highlight rim
   border-radius: 14px;
-  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 18px 40px 0 rgba(0, 0, 0, 0.35),           // outer depth
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),     // top inner rim — catches light
+    inset 0 -12px 20px -12px rgba(0, 0, 0, 0.25); // bottom inner shadow — gives it thickness
 }

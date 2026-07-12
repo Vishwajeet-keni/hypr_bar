@@ -10,63 +10,53 @@
 (defwidget control_center []
   (eventbox :onhoverlost "sleep 0.1 && eww close control_panel"
     (box :class "cc-window" :orientation "v" :space-evenly false
-      
-      ; ;; Top Row: Connections & Quick Actions
+
+      ;; Top Row: Connections & Quick Actions
       (box :class "cc-row" :orientation "h" :space-evenly true
-        
-        ;   ;; Left Block: Wi-Fi, Bluetooth, AirDrop
+
+        ;; Left Block: Wi-Fi, Bluetooth, AirDrop
         (box :class "cc-block-glass network-box" :orientation "v" :space-evenly true
-              (cc-toggle-tile
-                  :icon "${wifi-data.icon}"
-                  :icon-class "icon-blue"
-                  :title "Wi-Fi"
-                  :subtitle "${wifi-data.status}"
-                :onclick "~/.config/eww/hypr_bar/scripts/wifi.sh toggle")
-              (cc-toggle-tile
-                  :icon "${bluetooth-data.icon}"
-                  :icon-class "icon-blue"
-                  :title "Bluetooth"
-                  :subtitle "${bluetooth-data.status}"
-                :onclick "~/.config/eww/hypr_bar/scripts/bluetooth.sh toggle")
-              ;; AirDrop has no Linux equivalent — left as a static,
-              ;; non-functional placeholder. TODO: repurpose or remove.
-              (cc-toggle-tile
-                  :icon "󰔡"
-                  :icon-class "icon-gray"
-                  :title "AirDrop"
-                  :subtitle "Off"
-                :onclick ""))
-        
-          ;; Right Block: Stacked squares
-          (box :orientation "v" :space-evenly true :class "right-toggles"
-              ;; Focus (Do Not Disturb) — not wired yet. Needs to know which
-              ;; notification daemon you run (mako/dunst) before it can toggle
-              ;; anything real.
-              (box :class "cc-block-glass focus-box" :orientation "h" :space-evenly false
-                  (label :text "󰖔" :class "icon-purple")
-                  (label :text "Focus" :class "title" :valign "center"))
-          
-              (box :orientation "h" :space-evenly true :class "sub-grid"
-                  ;; Stage Manager / Screen Mirroring have no direct Linux
-                  ;; equivalent — static placeholders for now.
-                  (cc-icon-tile :icon "󰕰" :title "Stage")
-                  (cc-icon-tile :icon "󰕟" :title "Mirror"))
-        )
-      )
-      
-      ;; Middle Row: Display Slider (brightnessctl)
+          (cc-toggle-tile
+            :icon "${wifi-data.icon}"
+            :icon-class "icon-blue"
+            :title "Wi-Fi"
+            :subtitle "${wifi-data.status}"
+            :onclick "~/.config/eww/hypr_bar/scripts/wifi.sh toggle")
+          (cc-toggle-tile
+            :icon "${bluetooth-data.icon}"
+            :icon-class "icon-blue"
+            :title "Bluetooth"
+            :subtitle "${bluetooth-data.status}"
+            :onclick "~/.config/eww/hypr_bar/scripts/bluetooth.sh toggle"))
+
+        ;; Right Block: Stacked squares
+        (box :orientation "v" :space-evenly true :class "right-toggles"
+          ;; Focus (Do Not Disturb) — not wired yet. Needs to know which
+          ;; notification daemon you run (mako/dunst) before it can toggle
+          ;; anything real.
+          (box :class "cc-block-glass focus-box" :orientation "h" :space-evenly false
+            (label :text "󰖔" :class "icon-purple" :valign "center" :halign "center" :vexpand "false" :hexpand "false")
+            (label :text "Focus" :class "title" :valign "center"))
+
+          (box :orientation "h" :space-evenly true :class "sub-grid"
+            ;; Stage Manager / Screen Mirroring have no direct Linux
+            ;; equivalent — static placeholders for now.
+            (cc-icon-tile :icon "󰕰" :title "Stage")
+            (cc-icon-tile :icon "󰕟" :title "Mirror"))))
+
+      ; Middle Row: Display Slider (brightnessctl)
       (cc-slider
         :label "Display"
         :value {brightness-data.value}
         :min 10 :max 100
-      :onchange "~/.config/eww/hypr_bar/scripts/brightness.sh set {}")
-      
-      ;; Bottom Row: Sound Slider (wpctl)
+        :onchange "~/.config/eww/hypr_bar/scripts/brightness.sh set {}")
+
+      ; Bottom Row: Sound Slider (wpctl)
       (cc-slider
         :label "Sound"
         :value {volume-data.value}
         :min 0 :max 100
-      :onchange "~/.config/eww/hypr_bar/scripts/volume.sh set {}")
+        :onchange "~/.config/eww/hypr_bar/scripts/volume.sh set {}")
     )
   )
 )
