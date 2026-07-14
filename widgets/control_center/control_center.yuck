@@ -6,6 +6,8 @@
 (defpoll bluetooth-data  :interval "2s" "~/.config/eww/hypr_bar/scripts/bluetooth.sh")
 (defpoll brightness-data :interval "2s" "~/.config/eww/hypr_bar/scripts/brightness.sh")
 (defpoll volume-data     :interval "2s" "~/.config/eww/hypr_bar/scripts/volume.sh")
+(defpoll power_mode-data :interval "2s" "~/.config/eww/hypr_bar/scripts/power_mode.sh")
+
 
 (defwidget control_center []
   (eventbox :onhoverlost "sleep 0.1 && eww close control_panel"
@@ -15,7 +17,7 @@
       (box :class "cc-row" :orientation "h" :space-evenly true
 
         ;; Left Block: Wi-Fi, Bluetooth, AirDrop
-        (box :class "cc-block-glass network-box" :orientation "v" :space-evenly true
+        (box :class "network-box" :orientation "v" :space-evenly true
           (cc-toggle-tile
             :icon "${wifi-data.icon}"
             :icon-class "icon-blue"
@@ -31,12 +33,14 @@
 
         ;; Right Block: Stacked squares
         (box :orientation "v" :space-evenly true :class "right-toggles"
-          ;; Focus (Do Not Disturb) — not wired yet. Needs to know which
           ;; notification daemon you run (mako/dunst) before it can toggle
           ;; anything real.
-          (box :class "cc-block-glass focus-box" :orientation "h" :space-evenly false
-            (label :text "󰖔" :class "icon-purple" :valign "center" :halign "center" :vexpand "false" :hexpand "false")
-            (label :text "Focus" :class "title" :valign "center"))
+          (cc-toggle-tile
+            :icon "${power_mode-data.icon}"
+            :icon-class "icon-blue"
+            :title "Power-Mode"
+            :subtitle "${power_mode-data.mode}"
+            :onclick "~/.config/eww/hypr_bar/scripts/power_mode.sh toggle")
 
           (box :orientation "h" :space-evenly true :class "sub-grid"
             ;; Stage Manager / Screen Mirroring have no direct Linux
@@ -48,7 +52,7 @@
       (cc-slider
         :label "Display"
         :value {brightness-data.value}
-        :min 10 :max 100
+        :min 1 :max 100
         :onchange "~/.config/eww/hypr_bar/scripts/brightness.sh set {}")
 
       ; Bottom Row: Sound Slider (wpctl)

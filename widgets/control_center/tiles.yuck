@@ -9,7 +9,7 @@
 ; AirDrop.
 (defwidget cc-toggle-tile [icon icon-class title subtitle onclick]
   (button :class "cc-toggle-btn" :onclick onclick
-    (box :class "cc-item" :orientation "h" :space-evenly false
+    (box :class "cc-block-glass cc-item" :orientation "h" :space-evenly false
       (label :text icon :class icon-class)
       (box :orientation "v" :space-evenly false :class "cc-text"
         (label :text title :class "title" :halign "start")

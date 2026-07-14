@@ -6,7 +6,9 @@
   background: transparent;
 
   .cc-row        { margin-bottom: 12px; }
-  .right-toggles { margin-left: 12px; }
+  .right-toggles { margin-left: 12px; 
+    .cc-item { margin-bottom: 6px; padding: 6px 4px; }
+  }
   .sub-grid      { margin-top: 12px; }
   .slider-box    { margin-bottom: 12px; padding: 5px 16px; }
 }
@@ -16,8 +18,8 @@
 }
 
 .network-box {
-  padding: 12px;
-  .cc-item { padding: 6px 4px; }
+  // padding: 12px;
+  .cc-item { margin-bottom: 6px; padding: 6px 4px; }
 }
 
 // cc-toggle-tile wraps its row in a <button> so it's clickable —

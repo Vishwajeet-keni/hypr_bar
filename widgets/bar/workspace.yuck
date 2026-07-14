@@ -6,7 +6,7 @@
 
 (defwidget ws-btn [id]
   (button :class {"${workspace_data.current}" == "${id}" ? "ws-active" : "ws-inactive"}
-          :onclick `hyprctl dispatch workspace ${id}`
+          :onclick `hyprctl dispatch 'hl.dsp.focus({ workspace = "${id}" })'`
       (label :text {"${workspace_data.current}" == "${id}" ? ws-dot : "${id}"})
   )
 )
