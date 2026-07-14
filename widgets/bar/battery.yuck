@@ -1,5 +1,6 @@
 ;=====Battery====================================
-(defpoll battery-data :interval "5s" "~/.config/eww/hypr_bar/scripts/battery.sh")  
+(deflisten battery-data :initial `{"icon":"", "level":"100", "class":"Full"}`
+  "~/.config/eww/hypr_bar/scripts/battery.sh")
 
 (defwidget battery []
   (box  :class "battery_container" 
