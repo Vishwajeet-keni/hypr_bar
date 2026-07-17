@@ -42,7 +42,25 @@ emit() {
 # Emit once immediately so the widget has data before the first event arrives
 emit
 
-# Then only re-emit when upower reports an actual change
+# upower --monitor fires on lots of property changes (voltage, time-to-empty
+# estimates, etc.) that aren't the rounded percentage — so it can re-emit
+# many times with no real change, but it can also go quiet for a while
+# before the driver actually updates the rounded capacity value. Relying on
+# it alone meant the widget could go stale for many minutes (seen: stuck at
+# 100% for ~20 min, then a jump straight to 94%, then 89%) before finally
+# catching an event. A periodic fallback timer, running alongside the event
+# listener, guarantees emit() runs at least every 30s regardless of upower's
+# own timing — the event listener still gives instant reaction to real
+# changes like plug/unplug in between those ticks.
+(
+  while true; do
+    sleep 30
+    emit
+  done
+) &
+timer_pid=$!
+trap 'kill "$timer_pid" 2>/dev/null' EXIT
+
 upower --monitor | while read -r line; do
     case "$line" in
         *"device changed"*|*"state changed"*|*"percentage"*)
