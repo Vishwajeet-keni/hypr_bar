@@ -16,7 +16,7 @@
       ;; Top Row: Connections & Quick Actions
       (box :class "cc-row" :orientation "h" :space-evenly true
 
-        ;; Left Block: Wi-Fi, Bluetooth, AirDrop
+        ;; Left Block: Wi-Fi, Bluetooth
         (box :class "network-box" :orientation "v" :space-evenly true
           (cc-toggle-tile
             :icon "${wifi-data.icon}"

@@ -1,420 +1,309 @@
 # hypr_bar [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A personal status bar for [Hyprland](https://hyprland.org/), built with [EWW](https://github.com/elkowar/eww) (Elkowar's Wacky Widgets). Similar in concept to [Waybar](https://github.com/Alexays/Waybar), but written entirely in EWW's declarative Yuck language with SCSS styling — giving full control over layout, widgets, and appearance without being tied to Waybar's component model.
+A personal status bar **and macOS-style Control Center** for [Hyprland](https://hyprland.org/), built with [EWW](https://github.com/elkowar/eww) (Elkowar's Wacky Widgets).
 
-> **Note:** This is a personal configuration, not a general-purpose framework. It is designed to be used as a git submodule inside a dotfiles repo, living at `~/.config/eww/hypr_bar/`.
+> **Note:** This is a personal configuration, not a general-purpose framework — no build step, no binary, no config-file format of its own. "Configuring" it means editing the `.yuck`/`.scss` files directly. It's designed to be used as a git submodule inside a dotfiles repo, living at `~/.config/eww/hypr_bar/`.
 
 ![screenshot](screenshots/screenshot.png)
-
-
 ![screenshot placeholder](screenshots/screenshot1.png)
 
 ---
 
-## Layout
+## Overview
 
-The bar sits at the top of the screen, anchored center, spanning ~99% of the screen width with a 5px top gap.
+`hypr_bar` is a top status bar plus a separate macOS-style Control Center panel, both written entirely in EWW's declarative Yuck language with SCSS styling. Similar in concept to [Waybar](https://github.com/Alexays/Waybar), but without being tied to Waybar's component model — every widget is a plain shell script feeding a `defpoll`/`deflisten`, rendered by a `defwidget`, styled in SCSS.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  [Arch Logo]  [1] [2] [●] [4] [5]  │            │  CPU  RAM  Temp  Updates  WiFi  Bat  Time │
-└─────────────────────────────────────────────────────────┘
-                Left                       Center                        Right
-```
-
-### Left
-| Widget | Description |
-|---|---|
-| Arch Logo | Static Arch Linux icon, styled in Arch blue (`#1793d1`) |
-| Workspaces | Clickable buttons for workspaces 1–5 (always shown), plus any extra open ones. Active workspace shows a `●` dot; clicking switches to that workspace |
-
-### Center
-Reserved — empty by default, ready for an active window title or any future widget.
-
-### Right
-| Widget | Description |
-|---|---|
-| System Stats | CPU usage %, RAM usage %, CPU package temperature — each with a Nerd Font icon and a dynamic color-coded state |
-| Updates | Total pending update count (pacman + yay). Hover tooltip shows the pacman/AUR split |
-| WiFi | Shows connection icon; click to toggle WiFi on/off. Hover shows the connected SSID |
-| Battery | Icon + percentage. Pops up a dismissible warning overlay at ≤ 30% while discharging |
-| Time / Date | `Day DD-Mon  HH:MM`, updated every 10s. Hover opens a GTK calendar popup |
+**Compatibility is narrow by design:** this is built specifically for Hyprland's Lua config system (`hyprland.lua`, Hyprland 0.55+). See [Compatibility](#compatibility) for exactly why it won't run under i3, GNOME, or KDE as-is.
 
 ---
 
-## Dependencies
+## Features
+
+- Workspace switcher (1–5 always shown, plus any extra open ones), system stats (CPU/RAM/temp), pending-updates count, Wi-Fi, battery with low-battery popup, and a live clock with a liquid-glass, interactive calendar popup.
+- A macOS-style **Control Center** panel: Wi-Fi, Bluetooth, a 3-state Power Mode toggle, and Display/Sound sliders — all wired to real system state, styled with a "liquid glass" translucent effect.
+- Every widget is independently modular — one script + one widget file per concern, decomposed into a subfolder only once a feature grows enough files to need it (see [Project Structure](#project-structure)).
+- No `jq` dependency — all JSON is built and parsed with `awk`/`grep`/`sed`.
+
+---
+
+## Built With
+
+- **Config language:** [Yuck](https://elkowar.github.io/eww/configuration.html) (EWW's own Lisp-like declarative format) + SCSS
+- **Widget engine:** [EWW](https://github.com/elkowar/eww) (wayland branch)
+- **Compositor:** [Hyprland](https://hyprland.org/) 0.55+, Lua config (`hyprland.lua`)
+- **Backing tools:** `nmcli`, `bluetoothctl`, `brightnessctl`, `wpctl` (PipeWire), `tlpctl` (`tlp-pd`), `upower`, `socat`, `lm_sensors`, `pacman`/`yay` — see [Prerequisites](#prerequisites)
+
+---
+
+## Getting Started
+
+### Prerequisites
 
 **Required:**
 - [`eww`](https://github.com/elkowar/eww) — the widget daemon (wayland branch)
 - `hyprctl` — part of Hyprland; used for workspace data
-- `nmcli` — NetworkManager CLI; used by the WiFi widget
+- `nmcli` — NetworkManager CLI; used by the WiFi widget (bar icon **and** Control Center tile)
+- `bluetoothctl` — BlueZ CLI; used by the Bluetooth tile
+- `brightnessctl` — used by the Display slider
+- `wpctl` — PipeWire CLI; used by the Sound slider
+- `tlpctl` (from the **`tlp-pd`** package) — used by the Power Mode tile. This is the D-Bus client, not `tlp` itself — see [Modules → Control Center](#control-center) for why
+- `socat` — used by `workspaces.sh` to listen on Hyprland's event socket
+- `upower` — used by `battery.sh`'s event listener
 - `lm_sensors` — provides the `sensors` command for CPU temperature
-- `bash`, `awk`, `grep`, `sed`, `free`, `top`, `date` — standard coreutils
+- `bash`, `awk`, `grep`, `sed`, `free`, `top`, `date`, `flock` — standard coreutils / util-linux
 - A [Nerd Font](https://www.nerdfonts.com/) — all icons are Nerd Font glyphs
 
 **For the updates widget:**
 - `pacman` — Arch Linux package manager
 - `yay` — AUR helper (replaceable with `paru` or any `-Qu`-compatible helper)
 
-> No `jq` dependency — all JSON is built and parsed with `awk`, `grep`, and `sed`.
+### Installation
 
----
-
-## File Structure
-
-This repo is designed to live inside a larger EWW config directory as a submodule. The full dotfiles context it was built for looks like this:
-
-```
-~/.config/
-├── eww/
-│   ├── eww.yuck                    ← (include "hypr_bar/hypr_bar.yuck")
-│   ├── eww.scss                    ← @use 'hypr_bar/style.scss'
-│   └── hypr_bar/                   ← this repo (git submodule)
-│       ├── hypr_bar.yuck           # Window definitions: hypr_bar, cal_popup, low_batt_warning
-│       ├── widgets.yuck            # All defwidget, defpoll, defvar definitions
-│       ├── style.scss              # All SCSS styling
-│       ├── README.md
-│       ├── LICENSE.md
-│       └── scripts/
-│           ├── battery.sh          # Reads /sys/class/power_supply/BAT0
-│           ├── system_stats.sh     # CPU %, RAM %, CPU temp via sensors
-│           ├── updates.sh          # Pending updates via pacman -Qu and yay -Qu
-│           ├── wifi.sh             # WiFi status and toggle via nmcli
-│           └── workspaces.sh       # Active + open workspaces via hyprctl
-├── hypr/
-│   └── hyprland.conf               # exec-once launches eww daemon + bar
-└── scripts/
-    └── reload.sh                   # Super+R keybind — kills and reopens the bar
-```
-
-The root `eww.yuck` and `eww.scss` each contain a single line pointing into the submodule. All window definitions, widgets, styles, and scripts live entirely within `hypr_bar/` — the submodule is self-contained.
-
----
-
-## How It Works
-
-### The EWW data flow
-
-Every widget follows the same pattern:
-
-```
-shell script → outputs JSON → defpoll reads it → defwidget renders it → style.scss styles it
-```
-
-For example, the battery widget end-to-end:
-
-```
-battery.sh  →  {"icon":"","level":"72","class":"Discharging"}
-       ↓
-(defpoll battery-data :interval "5s" "scripts/battery.sh")
-       ↓
-(defwidget battery []
-  (label :text "${battery-data.level}%"
-         :class "${battery-data.class}"))   ← "Discharging" becomes the CSS class
-       ↓
-.battery_container .Discharging { color: whitesmoke; }
-```
-
-All five scripts follow this same contract: **output one line of JSON per run**, with keys that widgets reference directly via EWW's `${variable.key}` syntax.
-
-### File include chain
-
-EWW loads a single entry point — `eww.yuck` in the config root. From there:
-
-```
-eww.yuck
-  └── (include "hypr_bar/hypr_bar.yuck")
-        └── (include "hypr_bar/widgets.yuck")   ← all defpoll, defvar, defwidget
-
-eww.scss
-  └── @use 'hypr_bar/style.scss'                ← all widget styles
-```
-
-`hypr_bar.yuck` holds only `defwindow` blocks — the three named windows EWW can open: `hypr_bar`, `cal_popup`, and `low_batt_warning`. `widgets.yuck` holds all data definitions and widget logic. Keeping them separate means you can add a new popup window without touching widget code, and vice versa.
-
-### Bar layout — centerbox
-
-The bar uses EWW's `centerbox` as its root, which gives three slots where the center is **always truly centered** regardless of how wide the left or right sides are:
-
-```lisp
-(centerbox :orientation "h"
-  (box :halign "start" ...)    ; Left  — Arch logo + workspaces
-  (box :halign "center" ...)   ; Center — empty / reserved
-  (box :halign "end" ...)      ; Right — stats, updates, wifi, battery, time
-)
-```
-
-This is why the time widget stays flush-right even as the workspace buttons change width.
-
-### Dynamic CSS state classes
-
-System stats (CPU, RAM, temp) use a pattern where the shell script maps a number to a CSS class name string — no conditional logic in Yuck at all:
-
+**As a submodule (recommended):**
 ```bash
-# system_stats.sh — the script decides the class
-cpu_state=$(echo "$cpu_usage" | awk '{
-  if ($1 < 30) print "cpu-idle"
-  else if ($1 < 70) print "cpu-moderate"
-  else         print "cpu-critical"
-}')
+git submodule add https://github.com/Vishwajeet-keni/hypr_bar.git path/to/.config/eww/hypr_bar
 ```
-
-```lisp
-; widgets.yuck — the class is just another JSON value
-(label :text "${System_data.cpu_usage}%"
-       :class "${System_data.cpu_state}")
-```
-
-```scss
-// style.scss — one rule per state
-.cpu-idle     { color: #74c7ec; }
-.cpu-moderate { color: #f9e2af; }
-.cpu-critical { color: #f38ba8; }
-```
-
-Adding a new threshold is one line in the script and one line in the stylesheet.
-
-### Workspace widget
-
-`workspaces.sh` always includes workspaces 1–5 as a baseline, merged with whatever is actually open in Hyprland. This ensures the row never collapses below 5 buttons, even on a fresh session with only workspace 1 open:
-
-```bash
-all_workspaces=$(echo "1 2 3 4 5 $workspaces" | tr ' ' '\n' | sort -nu | ...)
-```
-
-The widget loops over the resulting array and renders one button per entry. The active workspace gets `ws-active` (renders `●`); everything else gets `ws-inactive` (renders the number). Clicking dispatches `hyprctl dispatch workspace <id>`.
-
-### Low battery popup
-
-The battery script does more than report data — it also opens a second EWW window directly when needed:
-
-```bash
-# battery.sh
-if [ "$level" -le 30 ] && [ "$status" = "Discharging" ] && [ ! -f "/tmp/eww_batt_warning_shown" ]; then
-  eww open low_batt_warning
-  touch "/tmp/eww_batt_warning_shown"   # flag prevents repeated popups
-fi
-
-# Reset flag when charging or battery recovers above 30
-if [ "$status" = "Charging" ] || [ "$level" -gt 30 ]; then
-  rm -f "/tmp/eww_batt_warning_shown"
-fi
-```
-
-`low_batt_warning` is a separate `defwindow` in `hypr_bar.yuck` with `stacking "overlay"`. It contains a dismiss button that runs `eww close low_batt_warning`. The flag file at `/tmp/eww_batt_warning_shown` ensures the popup appears once per discharge cycle and doesn't spam on every 5s poll.
-
-### Calendar popup
-
-The time widget uses an `eventbox` to react to hover:
-
-```lisp
-(eventbox
-  :onhover     "eww open cal_popup"
-  :onhoverlost "sleep 0.3 && eww close cal_popup 2>/dev/null"
-  (label :class "time" :text time_poll))
-```
-
-`cal_popup` is a separate `defwindow` anchored to `top right`, containing EWW's built-in `calendar` widget powered by EWW's own `EWW_TIME` variable — no extra script needed. The 0.3s sleep on `onhoverlost` prevents the popup from closing before your mouse reaches it after leaving the time label.
-
----
-
-## Implementation — Hyprland Integration
-
-### Autostart
-
-The bar is launched automatically on login via `hyprland.conf`:
-
-```ini
-exec-once = eww daemon; eww open hypr_bar
-```
-
-`exec-once` ensures this runs only on Hyprland startup, not on every `hyprctl reload`. The daemon is started first, then the bar is opened — the semicolon means they run sequentially in the same line so the daemon is ready before `open` is called.
-
-### Reload keybind
-
-A reload script at `~/.config/scripts/reload.sh` handles cleanly restarting the bar without restarting Hyprland:
-
-```bash
-#!/bin/bash
-eww kill
-eww open hypr_bar
-```
-
-This is bound to `Super + R` in `hyprland.conf`:
-
-```ini
-bind = $mainMod, R, exec, ~/.config/scripts/reload.sh
-```
-
-Use this whenever you make changes to `widgets.yuck`, `style.scss`, or any script — EWW hot-reloads config on `eww open` after `eww kill`. Note that `Super + R` also has a second binding to `hyprctl reload` in the config, so both Hyprland and EWW reload together on that key.
-
-### Monitor setup
-
-The current setup runs on two displays:
-
-```ini
-monitor = , preferred, auto, auto          # laptop display (eDP-1) — auto resolution
-monitor = HDMI-A-1, 3840x2160@70, 0x0, 1  # external 4K TV at 70Hz, positioned left
-```
-
-The bar currently opens on the default monitor via `eww open hypr_bar`. Since `hypr_bar.yuck` does not specify a `:monitor` property, EWW places the bar on whichever monitor is primary. To explicitly target a monitor or open bars on both displays, see the Customization section below.
-
-### Wallpaper
-
-Wallpapers are managed by [`swww`](https://github.com/LGFae/swww), set per monitor at startup:
-
-```ini
-exec-once = swww-daemon
-exec-once = sleep 1 && swww img ~/wallpapers/static/w1.jpg --output eDP-1
-exec-once = sleep 1 && swww img ~/wallpapers/static/w1.jpg --output HDMI-A-1
-```
-
-The 1s sleep gives `swww-daemon` time to initialize before setting the image.
-
----
-
-## Installation
-
-### As a submodule (recommended)
-
-```bash
-# From your dotfiles root
-git submodule add https://github.com/VishwajeetKeni/hypr_bar.git path/to/.config/eww/hypr_bar
-```
-
-Set up the two root EWW files:
-
 ```lisp
 ; ~/.config/eww/eww.yuck
 (include "hypr_bar/hypr_bar.yuck")
 ```
-
 ```scss
 // ~/.config/eww/eww.scss
 @use 'hypr_bar/style.scss';
 ```
 
-### Standalone clone
-
+**Standalone clone:**
 ```bash
-git clone https://github.com/VishwajeetKeni/hypr_bar.git ~/.config/eww/hypr_bar
+git clone https://github.com/Vishwajeet-keni/hypr_bar.git ~/.config/eww/hypr_bar
 ```
+Then create the two root files above by hand.
 
-Then create `~/.config/eww/eww.yuck` and `~/.config/eww/eww.scss` as shown above.
-
-### Make scripts executable
-
+**Make scripts executable** (easy to forget — a missing `chmod +x` fails silently, just showing a widget stuck with no data):
 ```bash
 chmod +x ~/.config/eww/hypr_bar/scripts/*.sh
 ```
 
-### Add to Hyprland autostart
+### Running
 
-```ini
-# ~/.config/hypr/hyprland.conf
-exec-once = eww daemon; eww open hypr_bar
+Hyprland 0.55+ uses `hyprland.lua` instead of the old `hyprland.conf` ini syntax:
+
+```lua
+-- Autostart
+hl.on("hyprland.start", function()
+  hl.exec_cmd("eww daemon")
+  hl.exec_cmd("eww open hypr_bar")
+end)
+
+-- Reload keybind
+hl.bind("SUPER + R", hl.dsp.exec_cmd("~/.config/scripts/reload.sh"))
 ```
 
-### Optional — reload keybind
-
-Create `~/.config/scripts/reload.sh`:
-
+`reload.sh`:
 ```bash
 #!/bin/bash
 eww kill
 eww open hypr_bar
 ```
 
-```bash
-chmod +x ~/.config/scripts/reload.sh
-```
+**Blur, for the liquid-glass Control Center:**
+```lua
+hl.config({
+  decoration = { blur = { enabled = true, size = 6, passes = 3 } }
+})
 
-Bind it in `hyprland.conf`:
-
-```ini
-bind = $mainMod, R, exec, ~/.config/scripts/reload.sh
+hl.layer_rule({
+  match = { namespace = "eww" },
+  blur = true,
+  ignore_alpha = 0.5,  -- lets blur show through the semi-transparent glass panels
+})
 ```
+This only takes effect if every `defwindow` in `hypr_bar.yuck` explicitly sets `:namespace "eww"` — see [Modules → Control Center](#control-center).
 
 ---
 
-## Customization
+## Configuration
 
-**Change poll intervals** — edit the `:interval` values in `widgets.yuck`. `wifi-data` is `1s` by default; `5s` is plenty for most use cases.
+There's no config file — you edit the source directly:
 
-**Change the color theme** — all colors are in `style.scss`. The state classes (`cpu-critical`, `mem-high`, etc.) are independent rules, so remapping to a different palette is a straightforward find-and-replace on hex values.
-
-**Use a different AUR helper** — replace `yay` in `scripts/updates.sh` with `paru` or any helper that supports `-Qu`.
-
-**Different CPU sensor** — run `sensors` to find your chip name. AMD systems typically use `k10temp` instead of `coretemp-isa-0000`. Update the chip name and the `grep "Package id 0"` filter in `scripts/system_stats.sh`.
-
-**Different battery device** — run `ls /sys/class/power_supply/` to find your battery name (e.g. `BAT1`), then update the paths in `scripts/battery.sh`.
-
-**Open bar on a specific monitor** — add `:monitor` to the `defwindow` in `hypr_bar.yuck`:
-
-```lisp
-(defwindow hypr_bar
-  :monitor 0          ; 0 = primary, 1 = secondary, etc.
-  ...)
-```
-
-**Add a new widget** — write a script in `scripts/` that outputs JSON, add a `defpoll` + `defwidget` in `widgets.yuck`, place the widget in the left/center/right box in `hypr_bar.yuck`, and style it in `style.scss`.
+- **Poll intervals:** edit `:interval` on the relevant `defpoll`. `wifi-data` is `1s`; `bluetooth-data`/`brightness-data`/`volume-data` are `2s`.
+- **Color theme:** shared tokens live in `scss/variables.scss` (`$accent-mauve`, `$accent-blue`, `$text-primary`, `$text-muted`, `$bg-dark`) — remap those and both the bar and Control Center follow.
+- **AUR helper:** replace `yay` in `scripts/updates.sh` with `paru` or any `-Qu`-compatible helper.
+- **CPU sensor:** see `scripts/system_stats.sh`; AMD systems typically use `k10temp` instead of `coretemp-isa-0000`.
+- **Battery device:** run `ls /sys/class/power_supply/` to find your battery name (e.g. `BAT1`), then update paths in `scripts/battery.sh`.
+- **Already running GNOME/KDE's `power-profiles-daemon`?** You cannot run `tlp-pd` alongside it — disable one before installing the other (see [Compatibility](#compatibility)).
+- **Monitor placement:** add `:monitor` to a `defwindow` in `hypr_bar.yuck`.
 
 ---
 
-## Styling
+## Modules
 
-All styles are in `style.scss` using SCSS. The color palette is [Catppuccin Mocha](https://github.com/catppuccin/catppuccin):
+### Bar (left → right)
+
+| Widget | Backing tool | Behavior |
+|---|---|---|
+| Arch Logo | — | Static, cosmetic only |
+| Workspaces | `hyprctl` + Hyprland event socket | 1–5 always shown + any extra open; click to switch |
+| System Stats | `sensors`, `/proc` | CPU %, RAM %, CPU temp, color-coded by state |
+| Updates | `pacman`/`yay` | Pending update count; hover shows pacman/AUR split |
+| WiFi | `nmcli` | Click to toggle; hover shows SSID |
+| Battery | sysfs + `upower` | Icon + %; low-battery popup at ≤30% while discharging |
+| Control Center button | — | Opens the panel below |
+| Time / Date | EWW's `EWW_TIME` | Hover opens a liquid-glass calendar popup |
+
+### Control Center
+
+| Tile | Backing tool | Behavior |
+|---|---|---|
+| Wi-Fi | `nmcli` (same `wifi-data` the bar icon uses) | Click to toggle |
+| Bluetooth | `bluetoothctl` | Click to toggle |
+| Focus | — | Static placeholder — needs a notification-daemon target (mako/dunst) to wire up |
+| Stage / Mirror | — | Static placeholders — no direct Linux equivalent |
+| Power Mode | `tlpctl` (`tlp-pd`) | Click cycles `performance → balanced → power-saver → ...` |
+| Display | `brightnessctl` | Slider, 0–100% |
+| Sound | `wpctl` (PipeWire) | Slider, 0–100% |
+
+Architecture behind these tiles — worth reading if you're extending them:
+
+- **Reusable tiles, not copy-paste:** `tiles.yuck` defines three generic, data-agnostic widgets — `cc-toggle-tile [icon icon-class title subtitle onclick]`, `cc-icon-tile [icon title]`, `cc-slider [label value min max onchange]` — reused across all seven tiles instead of hand-writing each one.
+- **Single source of truth for Wi-Fi:** `control_center.yuck` deliberately does *not* redefine `wifi-data` — it reuses the exact same `defpoll` the bar's own Wi-Fi icon reads, so the two can never drift out of sync.
+- **Liquid glass:** `variables.scss`'s `liquid-glass` mixin gives every panel a soft radial sheen, a bright top rim + darker bottom inner shadow (for a sense of thickness), and a glow on the slider's active fill. GTK CSS only controls what's drawn *inside* the window though — actual blur is a compositor feature, which needed two separate fixes: (1) every `defwindow` needs an **explicit** `:namespace "eww"`, since EWW's default namespace isn't guaranteed to match a Hyprland layer rule; (2) the layer rule's `ignore_alpha` needs to be *high* enough (`0.5` here) to cover these panels' ~6–8% opacity — confirmed directly: `cal_popup`'s dedicated rule at `ignore_alpha = 0.1` left it unblurred, and raising it to `0.5` (matching `control_panel`'s rule) fixed it. Too low a threshold leaves those pixels being treated as "meant to be opaque" and skipped for blur.
+- **Power Mode**, specifically: uses `tlpctl` (from the `tlp-pd` package), not `tlp` directly — almost every `tlp` subcommand needs root, including just reading status, which would mean either a sudo prompt breaking the UI or a sudoers file to maintain. `tlp-pd` runs as a D-Bus daemon `tlpctl` talks to over your session — no root needed, and `tlpctl get` reads live state directly, no local state file. It also guards against a real bug found while building it: **EWW/GTK can fire a single click's `onclick` more than once** (confirmed via debug logging — multiple PIDs spawned within the same millisecond for one physical click), which on a 3-state cycle can silently cancel out and make the toggle look "stuck." A non-blocking `flock` around the state-mutating section fixes this — a duplicate invocation arriving mid-transition just skips its own mutation instead of applying an unwanted extra step.
+
+### Data flow — two patterns
+
+Most widgets poll on a fixed interval:
+```
+shell script → JSON → defpoll (fixed interval) → defwidget
+```
+`workspaces.sh` and `battery.sh` instead use `deflisten`: emit once immediately, then block on a live source (Hyprland's IPC socket, or `upower --monitor`) and re-emit only on real change — instant updates, no wasted polling.
+
+`battery.sh` combines both: the event listener reacts instantly to plug/unplug, but a background 30-second timer runs alongside it as a fallback, because `upower --monitor` fires on lots of properties that aren't the rounded percentage and was observed to leave the widget stale for ~20 minutes before jumping several % at once. The timer guarantees it can't go stale for more than 30s regardless of event sparsity.
+
+### Calendar popup
+
+Styled with the same `liquid-glass` mixin as the Control Center, but GTK's native `calendar` widget fought it harder than expected — its built-in theme paints its own background/border/font styling on internal nodes (`header`, `grid`, day labels) broadly enough that simply raising CSS specificity (e.g. `calendar.cal` instead of `.cal`) wasn't enough to fully override it. The actual fix is a targeted reset:
 
 ```scss
-#cba6f7  // Mauve   — active workspace, tooltip borders, calendar buttons
-#cdd6f4  // Text    — inactive workspaces
-#89b4fa  // Blue    — cpu-low state
-#a6e3a1  // Green   — temp-normal state
-#f9e2af  // Yellow  — temp-warm state
-#fab387  // Peach   — temp-hot state
-#f38ba8  // Red     — cpu-critical, temp-crit state
-#1793d1  // Arch blue — logo
+.cal * {
+  all: unset;
+}
 ```
 
-The bar background is `rgba(black, 0.5)`. Hyprland's blur is already enabled in the config (`blur { enabled = true }`). To apply it to the EWW layer specifically, add these layer rules to `hyprland.conf`:
-
-```ini
-layerrule = blur, eww
-layerrule = ignorezero, eww
-```
+`all: unset` strips every property GTK's theme sets on the calendar's descendants, before `.cal`'s own rules apply on top. **Scoped to `.cal *` deliberately** — a bare `* { all: unset; }` at the top of this file would reset *every element in the entire bar and Control Center*, since all `scss/` files are concatenated into one stylesheet by `style.scss`. This was caught and fixed before it shipped, but it's worth remembering if you're ever tempted to reach for `all: unset` elsewhere in this repo: always scope it to a specific ancestor class.
 
 ---
 
-## Troubleshooting
+## Compatibility
 
-**Bar doesn't appear**
-Run `eww logs` to check for errors. Confirm the include path in your root `eww.yuck` is `"hypr_bar/hypr_bar.yuck"` and that the repo is at `~/.config/eww/hypr_bar/`.
+**Short answer: Hyprland only.** Not a portability gap to fix later — several pieces are structurally tied to Hyprland.
 
-**Changes not reflected after editing files**
-Run the reload script or do it manually:
-```bash
-eww kill && eww open hypr_bar
+**Hard blockers:**
+- Workspace switching talks directly to Hyprland's own IPC socket/dispatcher syntax — i3 has a different IPC entirely; GNOME/KDE have no `hyprctl`.
+- Blur is driven by `hyprland.lua`'s `hl.layer_rule`/`hl.config` — meaningless elsewhere.
+- **GNOME won't render the bar correctly at all** — EWW's layer-shell windowing needs the Wayland `wlr-layer-shell` protocol, which GNOME's Mutter doesn't implement (same reason Waybar-style bars don't work under GNOME Wayland). KDE's KWin does support it on recent versions. i3 is X11-only, so layer-shell doesn't apply there at all.
+
+**Soft blockers (Arch-specific, adaptable):** package names throughout are Arch package names; `updates.sh` is pacman/AUR-specific; `Arch_logo.yuck` is a cosmetic hardcoded glyph.
+
+**Portable on their own:** `wifi.sh`, `bluetooth.sh`, `volume.sh`, `brightness.sh`, `battery.sh` don't care about DE/WM — only whether their CLI tool is installed.
+
+**Extra gotcha:** `tlp-pd` exposes the same D-Bus interface as GNOME/KDE's built-in `power-profiles-daemon` — running both causes a conflict.
+
+---
+
+## Logging & Troubleshooting
+
+**Bar doesn't appear** — `eww logs`; confirm the include path and repo location.
+
+**Changes not reflected** — `eww kill && eww open hypr_bar`; EWW doesn't hot-reload.
+
+**Widgets show no data** — confirm scripts are executable; test directly, e.g. `bash ~/.config/eww/hypr_bar/scripts/battery.sh`.
+
+**Workspace widget emits once, never updates** — check `socat` is installed (`which socat`); without it the socket connection fails silently.
+
+**Battery widget stalls for long stretches, then jumps several %** — expected on some hardware given `upower`'s event granularity; this is why the 30s fallback timer exists. Confirm it hasn't been removed from the script.
+
+**Control Center panel isn't actually blurred** — check (1) every `defwindow` has explicit `:namespace "eww"`, (2) try *raising* `ignore_alpha` (e.g. to `0.7`) — a threshold that's too low leaves your panel's semi-transparent pixels being treated as "meant to be opaque" and skipped for blur.
+
+**Calendar popup shows GTK's default gray background instead of liquid glass** — this isn't a blur problem, it's GTK's own theme styling on the calendar's internal nodes fighting our CSS. See [Modules → Calendar popup](#calendar-popup) — the fix is a properly-scoped `.cal * { all: unset; }`, not just raising selector specificity.
+
+**Power Mode tile seems "stuck"** — confirm you have the `flock`-guarded version of `power_mode.sh`; without it a single click can silently apply 2–3 transitions and land back where it started.
+
+**`tlpctl` not found / tile shows `"mode":"unavailable"`** — confirm `tlp-pd` is installed and running: `systemctl status tlp-pd`. Conflicts with `power-profiles-daemon` if both are present.
+
+**Package install fails with 404s from every mirror** — local pacman database out of sync, not a broken package. `sudo pacman -Syyu` (double-`y`), then retry; regenerate mirrorlist with `reflector` if still unreliable.
+
+**Temperature shows nothing** — run `sensors`; AMD systems need `k10temp` instead of `coretemp-isa-0000` in `scripts/system_stats.sh`.
+
+**Battery widget missing** — check `ls /sys/class/power_supply/`, update `BAT0` paths if named differently.
+
+**Updates widget hangs EWW** — `yay -Qu` can be slow; wrapped in `timeout 30`.
+
+**Calendar popup doesn't close cleanly** — the 0.3s `onhoverlost` delay is intentional; below ~0.1s it tends to close before your mouse arrives.
+
+---
+
+## Project Structure
+
 ```
-EWW does not hot-reload in the background — a kill/reopen is required.
-
-**Widgets show no data**
-Make sure scripts are executable and test them directly in a terminal:
-```bash
-bash ~/.config/eww/hypr_bar/scripts/battery.sh
+~/.config/
+├── eww/
+│   ├── eww.yuck                          ← (include "hypr_bar/hypr_bar.yuck")
+│   ├── eww.scss                          ← @use 'hypr_bar/style.scss'
+│   └── hypr_bar/                         ← this repo (git submodule)
+│       ├── hypr_bar.yuck                 # defwindow: hypr_bar, control_panel, low_batt_warning, cal_popup
+│       ├── style.scss
+│       ├── README.md
+│       ├── LICENSE.md
+│       ├── scss/
+│       │   ├── variables.scss            # shared palette tokens + liquid-glass mixin
+│       │   ├── bar.scss
+│       │   ├── calendar.scss
+│       │   └── control_center.scss
+│       ├── widgets/
+│       │   ├── Arch_logo.yuck
+│       │   ├── battery.yuck
+│       │   ├── menu.yuck
+│       │   ├── system_stats.yuck
+│       │   ├── temp.yuck
+│       │   ├── time_date_cal.yuck
+│       │   ├── updates.yuck
+│       │   ├── wifi.yuck
+│       │   ├── workspace.yuck
+│       │   └── control_center/           # subfolder — this feature owns enough files to warrant it
+│       │       ├── tiles.yuck            # reusable: cc-toggle-tile, cc-icon-tile, cc-slider
+│       │       └── control_center.yuck   # composition + this feature's defpolls
+│       └── scripts/
+│           ├── battery.sh                # BAT0 level/status — event + 30s fallback poll
+│           ├── bluetooth.sh              # bluetoothctl state/toggle
+│           ├── brightness.sh             # brightnessctl get/set
+│           ├── power_mode.sh             # tlpctl get/cycle (performance/balanced/power-saver)
+│           ├── system_stats.sh           # CPU %, RAM %, CPU temp via sensors
+│           ├── updates.sh                # Pending updates via pacman -Qu and yay -Qu
+│           ├── volume.sh                 # wpctl get/set
+│           ├── wifi.sh                   # WiFi status + toggle via nmcli (shared: bar + Control Center)
+│           └── workspaces.sh             # Active + open workspaces — event + hyprctl
+├── hypr/
+│   └── hyprland.lua                      # exec/bind hooks launch eww + blur/layer rules
+└── scripts/
+    └── reload.sh                        # Super+R keybind — kills and reopens the bar
 ```
-Each script should print one line of JSON to stdout with no errors.
 
-**Temperature shows nothing**
-Run `sensors` and check that `coretemp-isa-0000` with a `Package id 0` field exists. If your system uses a different chip (common on AMD), update the sensor name and grep filter in `scripts/system_stats.sh`.
+One file per widget is intentional — decompose into a subfolder only once a feature grows enough sub-files to clutter the flat listing otherwise, as `control_center/` did.
 
-**Battery widget missing**
-Run `ls /sys/class/power_supply/` — if your battery is `BAT1` or named differently, update the paths in `scripts/battery.sh`.
+---
 
-**Updates widget hangs EWW**
-`yay -Qu` contacts AUR servers and can be slow. The script wraps it in `timeout 30`. Increase this on a slow connection, or remove the `yay_u` lines entirely if you don't use an AUR helper.
+## Roadmap
 
-**Calendar popup doesn't close cleanly**
-The 0.3s sleep on `onhoverlost` is intentional to prevent the popup flickering closed before your mouse reaches it. Reduce it carefully — below `0.1s` the popup tends to close before you arrive.
+Real open items from building this, not aspirational filler:
+- Wire **Focus** to an actual notification daemon (mako or dunst — undecided).
+- **Stage / Mirror** have no Linux equivalent; either repurpose these tiles for something real or remove them.
+- Investigate *why* EWW/GTK double-fires `onclick` on the Power Mode tile — the `flock` guard masks the symptom but the root cause is still unconfirmed, and it may affect other toggle tiles less visibly (a 2-state toggle firing twice just looks like a no-op, not a visible "stuck" state).
+
+---
+
+## Contributing
+
+This is a personal dotfiles config, not a general framework — not actively seeking outside contributions, but feel free to fork and adapt.
 
 ---
 
@@ -429,5 +318,6 @@ Copyright (c) 2026 Vishwajeet Keni
 
 - [EWW](https://github.com/elkowar/eww) by ElKowar — the widget framework
 - [Hyprland](https://hyprland.org/) — the compositor
+- [tlp-pd](https://archlinux.org/packages/extra/any/tlp-pd/) — power-profiles-daemon-compatible D-Bus interface for TLP
 - [Catppuccin](https://github.com/catppuccin/catppuccin) — color palette
 - [Nerd Fonts](https://www.nerdfonts.com/) — icons

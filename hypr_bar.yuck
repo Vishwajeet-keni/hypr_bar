@@ -84,23 +84,20 @@
 
 (defwindow cal_popup
   :monitor 0
-  :windowtype "normal"
-  ;  :windowtype "popup"    ; was "normal"
-  ;  :focusable  "false"
-  :geometry (geometry
-    :anchor "top right"
-    :x "8px"
-    :y "8px"
-    :width "200px"
-  )
+  ; :windowtype "normal"
+  :namespace "eww-control-panel"
+  :geometry (geometry :x "8px"
+                      :y "8px"
+                      :anchor "top right"
+                      :width "200px")
   :stacking "overlay"
   :focusable "false"
   (eventbox
     :onhoverlost "eww close cal_popup"
     (calendar :class "cal"
-      :day {EWW_TIME.day}
-      :month {EWW_TIME.month}
-    :year {EWW_TIME.year})
+              :day {EWW_TIME.day}
+              :month {EWW_TIME.month}
+              :year {EWW_TIME.year})
   )
 )
 
@@ -109,7 +106,7 @@
 ;; The actual Window declaration
 (defwindow control_panel
   :monitor 0
-  :namespace "eww-control_panel"
+  :namespace "eww-control-panel"
   :geometry (geometry :x "8px" 
                       :y "8px" 
                       :anchor "top right" 
