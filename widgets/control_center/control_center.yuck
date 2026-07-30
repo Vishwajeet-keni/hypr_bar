@@ -29,19 +29,18 @@
             :icon-class "icon-blue"
             :title "Bluetooth"
             :subtitle "${bluetooth-data.status}"
-            :onclick "~/.config/eww/hypr_bar/scripts/bluetooth.sh toggle"))
-
-        ;; Right Block: Stacked squares
-        (box :orientation "v" :space-evenly true :class "right-toggles"
-          ;; notification daemon you run (mako/dunst) before it can toggle
-          ;; anything real.
+            :onclick "~/.config/eww/hypr_bar/scripts/bluetooth.sh toggle")
           (cc-toggle-tile
             :icon "${power_mode-data.icon}"
             :icon-class "icon-blue"
             :title "Power-Mode"
             :subtitle "${power_mode-data.mode}"
-            :onclick "~/.config/eww/hypr_bar/scripts/power_mode.sh toggle")
+            :onclick "~/.config/eww/hypr_bar/scripts/power_mode.sh toggle"))
 
+        ;; Right Block: Stacked squares
+        (box :orientation "v" :space-evenly true :class "right-toggles"
+          ;; notification daemon you run (mako/dunst) before it can toggle
+          ;; anything real.
           (box :orientation "h" :space-evenly true :class "sub-grid"
             ;; Stage Manager / Screen Mirroring have no direct Linux
             ;; equivalent — static placeholders for now.
