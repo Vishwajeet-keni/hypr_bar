@@ -54,7 +54,7 @@
 .menu-btn {
   font-size: $font-logo;
   @include btn-conf();
-  &:active    { color: #cba6f7 ; }
+  &:active    { color: #cba6f7 ;  font-size: $font-logo - 1; }
 }
 
 // ── Tooltips & Generic Popups ──
